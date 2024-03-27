@@ -1,9 +1,10 @@
-import './App.css';
+import React from 'react';
+import ButtonAppBar from './components/Navbar';
 
 function App() {
   return (
     <div className="App">
-      <h1>My First React App</h1>
+      <ButtonAppBar/>
     </div>
   );
 }
