@@ -1,25 +1,8 @@
-.hero {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Take up full viewport height */
-    background-color: #f0f0f0; /* Light background color */
+.container:hover{
+    box-shadow: 0 0 30px rgba(208, 0, 55, 1);
+}
+  .b{
+
+    color:  #372963,#100D23,#100d23,#00FF9C,#c592ff,#00FF9C,#ff4081;
   }
-  
-  .hero-left,
-  .hero-right {
-    flex: 1; /* Each div takes up half of the container */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .hero-image {
-    max-width: 100%; /* Ensure the image is responsive and doesn't overflow its container */
-    height: auto;
-  }
-  
-  .hero-right h1 {
-    font-size: 2.5rem; /* Large text for the greeting */
-    color: #333; /* Darker text color for contrast */
-  }
+ 

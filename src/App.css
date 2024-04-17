@@ -1,10 +1,9 @@
 html{
     padding: 0px;
     margin: 0px;
+    background-color:#020104;
 }
 body{
-    padding: 0px;
-    margin: 0px;
 }
 
 @font-face {
@@ -15,4 +14,22 @@ body{
 #navbar{
    padding: 10px;
    margin: 0px;
+   border-bottom: 2px solid #ff4081;
 }
+#navbar:hover{
+    box-shadow: 0 0 30px rgba(208, 0, 55, 1);
+}
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      box-shadow: 0 0 4px rgba(208, 0, 55, 0.678), 
+                  0 0 10px rgba(208, 0, 55, 0.678), 
+                  0 0 15px rgba(208, 0, 55, 1), 
+                  0 0 20px rgba(208, 0, 55, 1), 
+                  0 0 30px rgba(208, 0, 55, 1), 
+                  0 0 40px rgba(208, 0, 55, 1);
+    }
+    20%,32%,55% {        
+      box-shadow: none;
+    }
+  }
