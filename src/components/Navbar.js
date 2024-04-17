@@ -3,7 +3,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { GitHub, LinkedIn, Instagram } from '@mui/icons-material';
+import { GitHub, LinkedIn, Instagram, Mail } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import '../App.css';
 
 const Navbar = () => {
@@ -18,14 +19,20 @@ const Navbar = () => {
                 </Typography>
 
                 {/* Social Icons */}
-                <IconButton color="inherit" href="https://github.com/yourusername" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
+                <IconButton color="inherit" href="https://github.com/ishmam97" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
                     <GitHub />
                 </IconButton>
-                <IconButton color="inherit" href="https://linkedin.com/in/yourusername" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
+                <IconButton color="inherit" href="https://www.linkedin.com/in/ishmam-solaiman-212b32186/" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
                     <LinkedIn />
                 </IconButton>
-                <IconButton color="inherit" href="https://instagram.com/yourusername" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
+                <IconButton color="inherit" href="https://instagram.com/ishmam97/" target="_blank" sx={{ padding: '0', margin: '0 5px' }}>
                     <Instagram />
+                </IconButton>
+                {/* add hover tooltip saying contact me*/}
+                <IconButton color="inherit" href="mailto:ishmam.a.solaiman@gmail.com" sx={{ padding: '0', margin: '0 5px' }}>
+                    <Tooltip title="Contact Me" arrow>
+                        <Mail />
+                    </Tooltip>
                 </IconButton>
             </Toolbar>
         </AppBar>
