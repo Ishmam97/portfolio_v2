@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from './components/Navbar';
+import Hero from './components/Hero';
 // add css file
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -10,6 +11,7 @@ function App() {
     <div>
       <ThemeProvider theme={NavbarTheme}>
         <Navbar />
+        <Hero />
       </ThemeProvider>
     </div>
   );
