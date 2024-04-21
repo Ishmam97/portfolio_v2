@@ -5,7 +5,7 @@ import './css/Hero.css'
 
 function Hero() {
   return (
-    <Container className="container" maxWidth="lg" sx={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(208, 0, 55, 0.678)', border:'2px solid #ff4081'}}>
+    <Container className="hero-container" maxWidth="lg" sx={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(208, 0, 55, 0.678)', border:'2px solid #ff4081'}}>
       <Box className="hero-image-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <img src="/img/me.jpeg" alt="Ishmam" style={{ width: '100%', height: 'auto', borderRadius:'25px' }} />
       </Box>

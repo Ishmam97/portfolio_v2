@@ -7,8 +7,8 @@ body{
 }
 
 @font-face {
-    font-family: 'Creattion';
-    src: url('/fonts/Creattion Demo.otf') format('opentype');
+  font-family: 'Creattion';
+  src: url('/public/fonts/Creattion Demo.otf') format('opentype');
 }
 
 #navbar{
