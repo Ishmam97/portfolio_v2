@@ -1,8 +1,40 @@
 .container:hover{
     box-shadow: 0 0 30px rgba(208, 0, 55, 1);
 }
-  .b{
-
-    color:  #372963,#100D23,#100d23,#00FF9C,#c592ff,#00FF9C,#ff4081;
+.text-overlay{
+  width: 50%;
+}
+.hero-image-container {
+  width: 50%;
+}
+@media (max-width: 768px) {
+  .container {
+      background-size: cover; /* Cover the entire area of the container */
+      background-position: center; /* Center the background image */
+      background-image: url('/img/me.jpeg'); 
+      display: flex;
+      justify-content: center;
   }
- 
+
+  .hero-image-container {
+    width: 0% !important;
+    display: none; /* Ensure the image container is not displayed */
+  }
+  img{
+    display: none;
+  }
+  .text-overlay{
+    width: 100% !important;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    backdrop-filter: blur(5px); /* Frosted glass effect */
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black !important;
+  }
+  .text-overlay h6{
+    color: black;
+  }
+
+}
