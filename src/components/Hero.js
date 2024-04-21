@@ -5,11 +5,11 @@ import './css/Hero.css'
 
 function Hero() {
   return (
-    <Container className="container" maxWidth="lg" sx={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(208, 0, 55, 0.678)', border:'2px solid #ff4081'}}>
-      <Box sx={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <Container className="hero-container" maxWidth="lg" sx={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(208, 0, 55, 0.678)', border:'2px solid #ff4081'}}>
+      <Box className="hero-image-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <img src="/img/me.jpeg" alt="Ishmam" style={{ width: '100%', height: 'auto', borderRadius:'25px' }} />
       </Box>
-      <Box sx={{ width: '50%', textAlign: 'center', color:'#00FF9C' }}>
+      <Box className="text-overlay" sx={{ textAlign: 'center', color:'#00FF9C' }}>
         <Typography variant="h3" component="h1" gutterBottom sx={{color:'#DFFF3D', fontWeight: 700}}>
           Innovating Tomorrow, Today.
         </Typography>
