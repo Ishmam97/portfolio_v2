@@ -1,6 +1,11 @@
-.container:hover{
+.hero-container:hover{
     box-shadow: 0 0 30px rgba(208, 0, 55, 1);
 }
+.b{
+
+  color:  #372963,#100D23,#100d23,#00FF9C,#c592ff,#00FF9C,#ff4081;
+}
+
 .text-overlay{
   width: 50%;
 }
@@ -8,10 +13,10 @@
   width: 50%;
 }
 @media (max-width: 768px) {
-  .container {
+  .hero-container {
       background-size: cover; /* Cover the entire area of the container */
       background-position: center; /* Center the background image */
-      background-image: url('/img/me.jpeg'); 
+      background-image: url('/public/img/me.jpeg'); 
       display: flex;
       justify-content: center;
   }
