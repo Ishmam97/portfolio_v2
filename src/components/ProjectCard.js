@@ -3,12 +3,10 @@ import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 import { Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material';
 
-
 const font_style = {
     fontFamily: 'Lato, sans-serif',
     fontWeight: 400,
 }
-
 
 const ProjectCard = ({ project, index }) => {
     const [ref, inView] = useInView({
@@ -23,6 +21,16 @@ const ProjectCard = ({ project, index }) => {
             animate={inView ? { opacity: 1, translateY: 0 } : {}}
             exit={{ opacity: 0, translateY: 50 }}
             transition={{ duration: 0.5, delay: index * 0.3 }}
+            sx={{ marginX: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            // add media query for smaller screens
+            '@media (max-width: 1292px)': {
+                width: '90%',
+            }
+        }}
         >
             <Card sx={{ 
                 margin: '1rem', 
@@ -30,18 +38,26 @@ const ProjectCard = ({ project, index }) => {
                 backgroundColor: 'transparent',
                 border: '2px solid #ff4081',
             }}>
-                <CardActionArea sx={{ display: 'flex', flexDirection: 'row', '@media (max-width: 1292px)': {
-                    flexDirection: 'column',
-                }}}>
+                <CardActionArea sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    '@media (max-width: 1292px)': {
+                        flexDirection: 'column',
+                    }
+                }}>
                     <CardMedia
                         component="img"
                         image={project.imageUrl}
                         alt={project.title}
-                        sx={{ maxHeight: '20rem', maxWidth: '35.5rem', objectFit: 'cover', aspectRatio: '16/9',
-                        '@media (orientation: portrait)': {
-                            objectFit: 'contain',
-                            padding: '0 20%',
-                        }}}
+                        sx={{ 
+                            height: '20rem', 
+                            width: '35.5rem', 
+                            objectFit: 'cover',
+                            '@media (orientation: portrait)': {
+                                objectFit: 'contain',
+                                padding: '0 20%',
+                            }
+                        }}
                     />
                     <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
                         <Typography sx={{ fontSize: "2rem", ...font_style }} gutterBottom variant="h5" component="div" color="#DFFF3D">

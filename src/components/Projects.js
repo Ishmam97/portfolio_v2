@@ -27,17 +27,18 @@ export default function Projects() {
     return (
         <>
         <Container className='projects-title' sx={{width:'80%'}}>
-            <Typography variant="h2" sx={{ mb: 4, color:'#DFFF3D'}}>My Projects</Typography>
+            <Typography variant="h2" sx={{
+                mb: 6,
+                mt: 3,
+                color:'#DFFF3D',
+                fontFamily: 'Lato, sans-serif',
+            }}>
+                    My Projects
+            </Typography>
         </Container>        
         <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: '2rem',
-            marginBottom: '2rem',
-            marginX: 'auto',
-            width: '80%',
+            width: '95%',
+            margin: 'auto',
         }}>
             {projectsData.map((project, index) => (
                 <ProjectCard key={index} project={project} index={index} />
