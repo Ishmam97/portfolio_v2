@@ -39,7 +39,7 @@ const NavSidebar = () => {
                 {renderNavItem("/projects", <WorkIcon sx={{fontSize:'2.5rem', marginBottom: '15px', '@media (max-width: 1366px)': {
                     marginBottom: '5px',
             }}} />)}
-                {renderNavItem("/about", <InfoOutlinedIcon sx={{fontSize:'2.5rem'}} />)}
+                {/* {renderNavItem("/about", <InfoOutlinedIcon sx={{fontSize:'2.5rem'}} />)} */}
             </List>
         </Box>
     );

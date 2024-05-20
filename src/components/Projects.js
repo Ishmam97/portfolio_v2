@@ -8,17 +8,20 @@ const projectsData = [
     {
         title: "UBlog",
         description: "A social media website I built for my undergraduate web development course.",
-        imageUrl: "/img/ublog.gif"
+        imageUrl: "/img/ublog.gif",
+        technologies: ["react", "nodejs", "mongodb", "express"]
     },
     {
         title: "Disinfectors Inc. Website",
         description: "A website I built for a startup company that provides disinfection services. Includes a booking system and order tracking.",
-        imageUrl: "/img/disinfectors.gif"
+        imageUrl: "/img/disinfectors.gif",
+        technologies: ["html", "css", "javascript", "bootstrap", "firebase", "gcp"]
     },
     {
         title: "Feedme",
         description: "Food ordering and delivery app for android built using Kotlin and android studio.",
-        imageUrl: "/img/feedme2.gif"
+        imageUrl: "/img/feedme2.gif",
+        technologies: ["kotlin", "android-studio", "firebase"]
     },
 ];
 
