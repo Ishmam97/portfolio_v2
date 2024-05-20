@@ -1,13 +1,25 @@
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardMedia, Typography, Box, Tooltip } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, Box, Tooltip } from '@mui/material';
 import { SiReact, SiNodedotjs, SiMongodb, SiExpress, SiHtml5, SiCss3, SiJavascript, SiBootstrap, SiFirebase, SiGooglecloud, SiKotlin, SiAndroidstudio } from 'react-icons/si';
 
 const font_style = {
     fontFamily: 'Lato, sans-serif',
     fontWeight: 400,
 };
+
+const buttonStyle = {
+    borderRadius: '20px',
+    padding: '0.5rem 1.5rem',
+    margin: '0.5rem',
+    backgroundColor: '#DFFF3D',
+    color: '#000',
+    '&:hover': {
+        backgroundColor: '#c592ff',
+    },
+};
+
 const technologyIcons = {
     react: <Tooltip title="React"><SiReact color="#61DAFB" /></Tooltip>,
     nodejs: <Tooltip title="Node.js"><SiNodedotjs color="#339933" /></Tooltip>,
@@ -22,7 +34,6 @@ const technologyIcons = {
     kotlin: <Tooltip title="Kotlin"><SiKotlin color="#0095D5" /></Tooltip>,
     "android-studio": <Tooltip title="Android Studio"><SiAndroidstudio color="#3DDC84" /></Tooltip>,
 };
-
 
 const ProjectCard = ({ project, index }) => {
     const [ref, inView] = useInView({
@@ -42,7 +53,7 @@ const ProjectCard = ({ project, index }) => {
                 margin: '1rem', 
                 overflow: 'hidden',
                 backgroundColor: 'transparent',
-                border: '2px solid #ff4081',
+                border: '2px solid #c592ff',
             }}>
                 <Box sx={{ 
                     display: 'flex', 
@@ -83,6 +94,26 @@ const ProjectCard = ({ project, index }) => {
                                     </Box>
                                 </Tooltip>
                             ))}
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                            {project.live && (
+                                <Button 
+                                    href={project.liveUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    sx={buttonStyle}
+                                >
+                                    View Live
+                                </Button>
+                            )}
+                            <Button 
+                                href={project.githubUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                sx={buttonStyle}
+                            >
+                                View on Github
+                            </Button>
                         </Box>
                     </CardContent>
                 </Box>

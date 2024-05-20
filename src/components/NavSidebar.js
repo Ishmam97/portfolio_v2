@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom';
 const NavSidebar = () => {
     return (
         <Box sx={{
-            width: '100px', 
+            width: '60px', 
             position: 'fixed', 
             height: '80vh', 
             flexDirection: 'column', 
@@ -50,6 +50,9 @@ const renderNavItem = (path, icon) => (
         <NavLink to={path} end style={({ isActive }) => ({
             textDecoration: 'none',
             color: isActive ? '#DFFF3D' : '#00FF9C',
+            // faded background color when active
+            backgroundColor: isActive ? 'rgba(223, 255, 61, 0.15)' : 'transparent',
+            borderRadius: '50%',
         })}>
             <IconButton sx={{ color: 'inherit' }}>
                 {icon}
