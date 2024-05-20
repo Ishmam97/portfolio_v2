@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, List, ListItem, IconButton } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import WorkIcon from '@mui/icons-material/Work';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { NavLink } from 'react-router-dom';
 
 const NavSidebar = () => {
