@@ -2,7 +2,7 @@ import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 import { Button, Card, CardContent, CardMedia, Typography, Box, Tooltip } from '@mui/material';
-import { SiReact, SiNodedotjs, SiMongodb, SiExpress, SiHtml5, SiCss3, SiJavascript, SiBootstrap, SiFirebase, SiGooglecloud, SiKotlin, SiAndroidstudio } from 'react-icons/si';
+import { SiReact, SiNodedotjs, SiMongodb, SiExpress, SiHtml5, SiCss3, SiJavascript, SiBootstrap, SiFirebase, SiGooglecloud, SiKotlin, SiAndroidstudio, SiNextdotjs, SiPhp } from 'react-icons/si';
 
 const font_style = {
     fontFamily: 'Lato, sans-serif',
@@ -33,7 +33,8 @@ const technologyIcons = {
     gcp: <Tooltip title="Google Cloud Platform"><SiGooglecloud color="#4285F4" /></Tooltip>,
     kotlin: <Tooltip title="Kotlin"><SiKotlin color="#0095D5" /></Tooltip>,
     "android-studio": <Tooltip title="Android Studio"><SiAndroidstudio color="#3DDC84" /></Tooltip>,
-};
+    next: <Tooltip title="Next.js"><SiNextdotjs color='white' /></Tooltip>,
+    php: <Tooltip title="PHP"><SiPhp color='#777BB3' /></Tooltip>};
 
 const ProjectCard = ({ project, index }) => {
     const [ref, inView] = useInView({
@@ -79,33 +80,34 @@ const ProjectCard = ({ project, index }) => {
                             }
                         }}
                     />
-                    <CardContent sx={{ flexGrow: 1, textAlign: 'center', display: 'flex', flexDirection:'column', justifyContent: 'center' }}>
-                        <Typography sx={{ fontSize: "2rem", ...font_style }} gutterBottom variant="h5" component="div" color="#DFFF3D">
-                            {project.title}
-                        </Typography>
-                        <Typography sx={{ fontSize: "1.2rem", ...font_style }} variant="body2" color="#00FF9C">
-                            {project.description}
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
-                            {project.technologies.map((tech, index) => (
-                                <Tooltip key={index} title={tech.charAt(0).toUpperCase() + tech.slice(1).replace('-', ' ')}>
-                                    <Box sx={{ margin: '0 0.5rem', color: 'white', fontSize: '2rem' }}>
-                                        {technologyIcons[tech]}
-                                    </Box>
-                                </Tooltip>
-                            ))}
-                        </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
-                            {project.live && (
-                                <Button 
-                                    href={project.liveUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    sx={buttonStyle}
-                                >
-                                    View Live
-                                </Button>
-                            )}
+                <CardContent sx={{ flexGrow: 1, textAlign: 'center', display: 'flex', flexDirection:'column', justifyContent: 'center' }}>
+                    <Typography sx={{ fontSize: "2rem", ...font_style }} gutterBottom variant="h5" component="div" color="#DFFF3D">
+                        {project.title}
+                    </Typography>
+                    <Typography sx={{ fontSize: "1.2rem", ...font_style }} variant="body2" color="#00FF9C">
+                        {project.description}
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                        {project.technologies.map((tech, index) => (
+                            <Tooltip key={index} title={tech.charAt(0).toUpperCase() + tech.slice(1).replace('-', ' ')}>
+                                <Box sx={{ margin: '0 0.5rem', color: 'white', fontSize: '2rem' }}>
+                                    {technologyIcons[tech]}
+                                </Box>
+                            </Tooltip>
+                        ))}
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                        {project.live && (
+                            <Button 
+                                href={project.liveUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                sx={buttonStyle}
+                            >
+                                View Live
+                            </Button>
+                        )}
+                        {project.githubUrl && (
                             <Button 
                                 href={project.githubUrl} 
                                 target="_blank" 
@@ -114,8 +116,9 @@ const ProjectCard = ({ project, index }) => {
                             >
                                 View on Github
                             </Button>
-                        </Box>
-                    </CardContent>
+                        )}
+                    </Box>
+                </CardContent>
                 </Box>
             </Card>
         </motion.div>

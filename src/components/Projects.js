@@ -6,6 +6,14 @@ import ProjectCard from './ProjectCard';  // Import the new ProjectCard componen
 
 const projectsData = [
     {
+        title: "Cosmos",
+        description: "Cosmos research lab Website.",
+        imageUrl:"/img/cosmos.png",
+        technologies:["react", "next", "html", "css", "javascript", "bootstrap",],
+        live: true,
+        liveUrl: "https://cosmos.ualr.edu/"
+    },
+    {
         title: "UBlog",
         description: "A social media website I built for my undergraduate web development course.",
         imageUrl: "/img/ublog.gif",
