@@ -16,6 +16,10 @@
     "vertical-timeline-component-react": "^4.4.3",
     "web-vitals": "^2.1.4"
   },
+  "resolutions": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
   "engines": {
     "node": "v20.12.2"
   },
