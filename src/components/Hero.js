@@ -3,11 +3,10 @@ import { Box, Typography, Container } from '@mui/material';
 import { ReactTyped } from "react-typed";
 // import css from css/Hero.css
 import './css/Hero.css'
-import { Margin } from '@mui/icons-material';
 
 function Hero() {
   return (
-    <Container className="hero-container" sx={{display: 'flex'}}>
+    <Container className="section-container hero-container" sx={{display: 'flex'}}>
       <Box className="hero-image-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <img src="/img/me.jpeg" alt="Ishmam" className="img" />
       </Box>
