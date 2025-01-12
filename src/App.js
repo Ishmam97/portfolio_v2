@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Projects from './components/Projects';
 import AboutMe from './components/AboutMe';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import HomePage from './pages/HomePage';
 import NavSidebar from './components/NavSidebar';
 // add css file
 import './App.css';
@@ -21,7 +21,7 @@ function App() {
         </ThemeProvider>
         <NavSidebar />
         <Routes>
-          <Route path="/" element={<Hero />} />
+          <Route path="/" element={<HomePage/>} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/about" element={<AboutMe />} />
         </Routes>
