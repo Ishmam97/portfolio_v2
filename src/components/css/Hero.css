@@ -1,24 +1,42 @@
-.hero-container:hover{
-    box-shadow: 0 0 30px rgba(208, 0, 55, 1);
+/* Hero container styles
+display: 'flex', height: '600px', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(197, 146, 255, 0.678)', border:'2px solid #c592ff' 
+*/
+.subtitle-text{
+  margin-top: 500px;
 }
+
 .b{
 
-  color:  #372963,#100D23,#100d23,#00FF9C,#c592ff,#00FF9C,#ff4081, #DFFF3D;
+  color:  #372963,#100d23,#00FF9C,#c592ff,#00FF9C,#ff4081, #DFFF3D;
 }
 
 .text-overlay{
   width: 50%;
 }
 .hero-image-container {
-  width: 50%;
+  border-radius: 5;
+}
+.img{
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
 }
 @media (max-width: 768px) {
   .hero-container {
-      background-size: cover; /* Cover the entire area of the container */
-      background-position: center; /* Center the background image */
-      background-image: url('/public/img/me.jpeg'); 
-      display: flex;
-      justify-content: center;
+    height: 35rem;
+    background-size: cover; /* Cover the entire area of the container */
+    background-position: center; /* Center the background image */
+    background-image: url('/public/img/me.jpeg'); 
+    display: flex;
+    justify-content: center;
+  }
+  
+  .hero-container h3 {
+    font-size: 2.5rem;
+  }
+
+  .hero-container h4 {
+    font-size: 1.8rem;
   }
 
   .hero-image-container {
@@ -36,10 +54,13 @@
     justify-content: center;
     backdrop-filter: blur(5px); /* Frosted glass effect */
     background-color: rgba(255, 255, 255, 0.5);
-    color: black !important;
+    color: #100d23;
   }
   .text-overlay h6{
-    color: black;
+    color: #100d23
+  }
+  .text-overlay h2{
+    color: #100d23
   }
 
 }

@@ -1,29 +1,35 @@
 import React from 'react';
 import { Box, Typography, Container } from '@mui/material';
+import { ReactTyped } from "react-typed";
 // import css from css/Hero.css
 import './css/Hero.css'
 
 function Hero() {
   return (
-    <Container className="hero-container" maxWidth="lg" sx={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' , backgroundColor:'#020104', fontFamily: 'Lato, sans-serif',fontWeight: 400, marginTop: '2.5rem', borderRadius: '10px', boxShadow: '0 0 25px rgba(197, 146, 255, 0.678)', border:'2px solid #c592ff'}}>
+    <Container className="section-container hero-container" sx={{display: 'flex'}}>
       <Box className="hero-image-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <img src="/img/me.jpeg" alt="Ishmam" style={{ width: '100%', height: 'auto', borderRadius:'25px' }} />
+        <img src="/img/me.jpeg" alt="Ishmam" className="img" />
       </Box>
-      <Box className="text-overlay" sx={{ textAlign: 'center', color:'#00FF9C' }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{color:'#DFFF3D', fontWeight: 700}}>
-          Innovating Tomorrow, Today.
+      <Box className="text-overlay" sx={{ textAlign: 'center', color:'#00FF9C'}}>
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 450, color: '#DFFF3D' }}>
+          <span>Hi i am Ishmam.</span>
+        </Typography >
+        <Typography variant="h4">
+          <ReactTyped
+            strings={["Software Engineer", "Tech Enthusiast", "Problem Solver", "Data Scientist"]}
+            typeSpeed={25}
+            backSpeed={40}
+            loop
+            className="typed-text"  
+          />
         </Typography>
-        <Typography variant="h4" component="h2" gutterBottom sx={{fontWeight: 700 }}>
-          Hi, I'm Ishmam.
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom sx={{color:'#ff4081' ,fontWeight: 500 }}>
-            <span role="img" aria-label="rocket">🚀</span> Software Engineer | <span role="img" aria-label="tools">🛠</span> Tech Enthusiast | <span role="img" aria-label="chart">📈</span> Problem Solver
-        </Typography>
-        <Typography variant="body1">
-          Empowering technology through clean code and creative solutions.
-        </Typography>
-        <Typography variant="body1">
-          Discover how I transform complex challenges into actionable software innovations.
+        <Typography variant="subtitle1" className='subtitle-text' sx={{color:'#ff4081' ,fontWeight: 500, marginTop: '10px' }}>
+          Passionate self taught Web Application Developer, Data Scientist, Ai Application Engineer focusing on topics such as : 
+        </Typography> 
+        <Typography variant="subtitle1" className='subtitle-text' sx={{color:'#ff4081' ,fontWeight: 500, marginTop: '10px' }}>  
+          <span role="img" aria-label="robot">🤖</span> Applications of LLMS & Multi Agent Architecture <br/>
+          <span role="img" aria-label="laptop mobile">💻📱</span> Full stack web and mobile application development <br/>
+          <span role="img" aria-label="data">📊🩻</span> Data Science & Natural Language Processing <br/>  
         </Typography>
       </Box>
     </Container>
