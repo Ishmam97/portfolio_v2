@@ -1,7 +1,21 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { 
+  SiReact, 
+  SiNextdotjs, 
+  SiHtml5, 
+  SiCss3, 
+  SiJavascript, 
+  SiBootstrap,
+  SiNodedotjs,
+  SiMongodb,
+  SiExpress,
+  SiFirebase,
+  SiGooglecloud,
+  SiKotlin,
+  SiAndroidstudio
+} from 'react-icons/si';
 
 const projectsData = [
   {
@@ -42,19 +56,21 @@ const projectsData = [
   },
 ];
 
-// Technology icons mapping
+// Technology icons mapping with React Icons and Tooltips
 const technologyIcons = {
-  "React": "⚛️",
-  "Next.js": "▲",
-  "HTML": "🌐",
-  "CSS": "🎨",
-  "JavaScript": "💛",
-  "Bootstrap": "🅱️",
-  "Node.js": "💚",
-  "MongoDB": "🍃",
-  "Express": "🚂",
-  "Firebase": "🔥",
-  "GCP": "☁️"
+  "React": <Tooltip><TooltipTrigger><SiReact color="#61DAFB" size={20} /></TooltipTrigger><TooltipContent><p>React</p></TooltipContent></Tooltip>,
+  "Next.js": <Tooltip><TooltipTrigger><SiNextdotjs color="white" size={20} /></TooltipTrigger><TooltipContent><p>Next.js</p></TooltipContent></Tooltip>,
+  "HTML": <Tooltip><TooltipTrigger><SiHtml5 color="#E34F26" size={20} /></TooltipTrigger><TooltipContent><p>HTML5</p></TooltipContent></Tooltip>,
+  "CSS": <Tooltip><TooltipTrigger><SiCss3 color="#1572B6" size={20} /></TooltipTrigger><TooltipContent><p>CSS3</p></TooltipContent></Tooltip>,
+  "JavaScript": <Tooltip><TooltipTrigger><SiJavascript color="#F7DF1E" size={20} /></TooltipTrigger><TooltipContent><p>JavaScript</p></TooltipContent></Tooltip>,
+  "Bootstrap": <Tooltip><TooltipTrigger><SiBootstrap color="#7952B3" size={20} /></TooltipTrigger><TooltipContent><p>Bootstrap</p></TooltipContent></Tooltip>,
+  "Node.js": <Tooltip><TooltipTrigger><SiNodedotjs color="#339933" size={20} /></TooltipTrigger><TooltipContent><p>Node.js</p></TooltipContent></Tooltip>,
+  "MongoDB": <Tooltip><TooltipTrigger><SiMongodb color="#47A248" size={20} /></TooltipTrigger><TooltipContent><p>MongoDB</p></TooltipContent></Tooltip>,
+  "Express": <Tooltip><TooltipTrigger><SiExpress color="#339933" size={20} /></TooltipTrigger><TooltipContent><p>Express</p></TooltipContent></Tooltip>,
+  "Firebase": <Tooltip><TooltipTrigger><SiFirebase color="#FFCA28" size={20} /></TooltipTrigger><TooltipContent><p>Firebase</p></TooltipContent></Tooltip>,
+  "GCP": <Tooltip><TooltipTrigger><SiGooglecloud color="#4285F4" size={20} /></TooltipTrigger><TooltipContent><p>Google Cloud Platform</p></TooltipContent></Tooltip>,
+  "Kotlin": <Tooltip><TooltipTrigger><SiKotlin color="#0095D5" size={20} /></TooltipTrigger><TooltipContent><p>Kotlin</p></TooltipContent></Tooltip>,
+  "Android Studio": <Tooltip><TooltipTrigger><SiAndroidstudio color="#3DDC84" size={20} /></TooltipTrigger><TooltipContent><p>Android Studio</p></TooltipContent></Tooltip>,
 };
 
 const Projects = () => {
@@ -132,20 +148,13 @@ const Projects = () => {
                     </p>
                   </div>
                   
-                  {/* Technologies with Icons */}
+                  {/* Technologies with React Icons */}
                   <div className="flex flex-wrap gap-3">
                     {project.technologies.map((tech, techIndex) => (
-                      <Tooltip key={techIndex}>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-2 px-3 py-2 bg-neon-purple/20 text-neon-purple border border-neon-purple rounded-full text-sm font-medium hover:bg-neon-purple/30 transition-colors cursor-pointer">
-                            <span className="text-lg">{technologyIcons[tech] || "🔧"}</span>
-                            <span>{tech}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{tech}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <div key={techIndex} className="flex items-center gap-2 px-3 py-2 bg-neon-purple/20 text-neon-purple border border-neon-purple rounded-full text-sm font-medium hover:bg-neon-purple/30 transition-colors">
+                        {technologyIcons[tech] || <span className="text-lg">🔧</span>}
+                        <span>{tech}</span>
+                      </div>
                     ))}
                   </div>
                   
