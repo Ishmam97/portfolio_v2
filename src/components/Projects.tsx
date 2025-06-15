@@ -15,10 +15,37 @@ import {
   SiFirebase,
   SiGooglecloud,
   SiKotlin,
-  SiAndroidstudio
+  SiAndroidstudio,
+  SiGoogle,
+  SiPython,
+  SiStreamlit,
+  SiLangchain,
+  SiOpenai,
+  SiSupabase,
+  SiDocker
 } from 'react-icons/si';
 
 const projectsData = [
+  {
+    title: "Interviewer AI",
+    description: "A mock technical interview platform using Retrieval-Augmented Generation. Upload your resume and job description to simulate personalized interview sessions.",
+    imageUrl: "/lovable-uploads/interviewer.png",
+    technologies: ["Python", "Streamlit", "LangGraph", "LangSmith", "FAISS", "Docker", "Supabase", "OpenAI"],
+    live: true,
+    liveUrl: "https://interviewerai-ishmamdemo.streamlit.app/",
+    githubUrl: "https://github.com/Ishmam97/Interviewer_AI",
+    category: "AI Application"
+  },
+  {
+    title: "UALR Graduate School Chatbot",
+    description: "An AI-powered chatbot for the UALR Graduate Admissions Office, enabling prospective students to query program info and admissions details via natural language.",
+    imageUrl: "/lovable-uploads/ualr_chatbot.png",
+    technologies: ["Python", "Streamlit", "LangChain", "FAISS", "RAG", "Docker", "Gemini", "Supabase", "LangSmith"],
+    live: true,
+    liveUrl: "https://ualrchatbot.streamlit.app/",
+    githubUrl: "https://github.com/Ishmam97/ualr_chatbot",
+    category: "AI Application"
+  },
   {
     title: "Cosmos",
     description: "Cosmos research lab Website.",
@@ -48,14 +75,15 @@ const projectsData = [
   },
   {
     title: "Feedme",
-    description: "Food ordering and delivery app for android built using Kotlin and android studio.",
+    description: "A mobile food ordering and delivery app built using Kotlin and Android Studio.",
     imageUrl: "/lovable-uploads/feedme.gif",
     technologies: ["Kotlin", "Android Studio"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/FeedMee",
     category: "Mobile Development"
-  },
+  }
 ];
+
 
 // Technology icons mapping with React Icons and Tooltips
 const technologyIcons = {
@@ -72,6 +100,16 @@ const technologyIcons = {
   "GCP": <Tooltip><TooltipTrigger><SiGooglecloud color="#4285F4" size={20} /></TooltipTrigger><TooltipContent><p>Google Cloud Platform</p></TooltipContent></Tooltip>,
   "Kotlin": <Tooltip><TooltipTrigger><SiKotlin color="#0095D5" size={20} /></TooltipTrigger><TooltipContent><p>Kotlin</p></TooltipContent></Tooltip>,
   "Android Studio": <Tooltip><TooltipTrigger><SiAndroidstudio color="#3DDC84" size={20} /></TooltipTrigger><TooltipContent><p>Android Studio</p></TooltipContent></Tooltip>,
+  "Python": <Tooltip><TooltipTrigger><SiPython color="#3776AB" size={20} /></TooltipTrigger><TooltipContent><p>Python</p></TooltipContent></Tooltip>,
+  "Streamlit": <Tooltip><TooltipTrigger><SiStreamlit color="#FF4E30" size={20} /></TooltipTrigger><TooltipContent><p>Streamlit</p></TooltipContent></Tooltip>,
+  "LangChain": <Tooltip><TooltipTrigger><SiLangchain color="#4B9CD3" size={20} /></TooltipTrigger><TooltipContent><p>LangChain</p></TooltipContent></Tooltip>,
+  "OpenAI": <Tooltip><TooltipTrigger><SiOpenai color="#412991" size={20} /></TooltipTrigger><TooltipContent><p>OpenAI</p></TooltipContent></Tooltip>,
+  "Supabase": <Tooltip><TooltipTrigger><SiSupabase color="#3ECF8E" size={20} /></TooltipTrigger><TooltipContent><p>Supabase</p></TooltipContent></Tooltip>,
+  "Docker": <Tooltip><TooltipTrigger><SiDocker color="#2496ED" size={20} /></TooltipTrigger><TooltipContent><p>Docker</p></TooltipContent></Tooltip>,
+  "Gemini": <Tooltip><TooltipTrigger><SiGoogle color="#4285F4" size={20} /></TooltipTrigger><TooltipContent><p>Gemini (Google)</p></TooltipContent></Tooltip>,
+  "FAISS": <Tooltip><TooltipTrigger><span className="text-lg">🧠</span></TooltipTrigger><TooltipContent><p>FAISS</p></TooltipContent></Tooltip>,
+  "LangGraph": <Tooltip><TooltipTrigger><span className="text-lg">🔗</span></TooltipTrigger><TooltipContent><p>LangGraph</p></TooltipContent></Tooltip>,
+  "LangSmith": <Tooltip><TooltipTrigger><span className="text-lg">🛠️</span></TooltipTrigger><TooltipContent><p>LangSmith</p></TooltipContent></Tooltip>
 };
 
 const Projects = () => {
