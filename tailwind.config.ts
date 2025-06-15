@@ -79,7 +79,8 @@ export default {
 			},
 			fontFamily: {
 				'lato': ['Lato', 'sans-serif'],
-				'orbitron': ['Orbitron', 'monospace']
+				'orbitron': ['Orbitron', 'monospace'],
+				'creattion': ['Creattion Demo', 'sans-serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

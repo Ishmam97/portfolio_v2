@@ -32,10 +32,43 @@ const Navbar = () => {
         {/* Logo */}
         <a 
           href="#hero" 
-          className="text-2xl sm:text-3xl md:text-4xl font-orbitron font-bold text-neon-yellow neon-glow transition-all duration-300 hover:text-neon-green"
+          className={`
+            group
+            font-creattion
+            font-bold
+            transition-all
+            duration-300
+            focus:outline-none
+          `}
+          style={{
+            fontSize: 'calc(2rem + 6pt)', // base 2rem (32px), + 8px ≈ +6pt
+          }}
         >
-          Ishmam
-          <span className="hidden sm:inline text-neon-green"> A. Solaiman</span>
+          <span
+            className={`
+              text-neon-yellow
+              neon-glow
+              transition-all
+              duration-300
+              group-hover:text-neon-yellow
+              group-hover:navbar-flicker
+            `}
+            style={{
+              display: 'inline-block',
+            }}
+          >
+            Ishmam
+          </span>
+          <span
+            className={`
+              hidden sm:inline text-neon-green neon-glow transition-all duration-300 group-hover:text-neon-yellow group-hover:navbar-flicker
+            `}
+            style={{
+              marginLeft: '0.5ch',
+            }}
+          >
+            A. Solaiman
+          </span>
         </a>
 
         {/* Social Icons */}

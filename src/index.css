@@ -1,4 +1,4 @@
-
+@import url('./fonts.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -69,7 +69,7 @@
   .section-container:hover {
     @apply shadow-lg;
     box-shadow: 0 0 25px rgba(197, 146, 255, 0.4);
-    background-color: rgba(15, 11, 20, 0.5);
+    background-color: rgba(15, 11, 20, 0.95); /* More opaque (95%) on hover */
   }
 
   .neon-glow {
@@ -88,6 +88,20 @@
   .glass-effect {
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .navbar-flicker {
+    animation: flicker 2s infinite;
+  }
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    /* Removed all box-shadow for no glow on flicker */
+    box-shadow: none;
+  }
+  20%,32%,55% {        
+    box-shadow: none;
   }
 }
 
