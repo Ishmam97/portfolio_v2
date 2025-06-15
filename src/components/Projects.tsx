@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -116,7 +117,7 @@ const Projects = () => {
                 data-index={index}
                 className={`section-container group ${
                   index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                } flex flex-col md:flex-row items-center gap-8 transition-all duration-700 ${
+                } flex flex-col md:flex-row items-center gap-8 transition-all duration-700 w-[95%] md:w-full mx-auto ${
                   visibleProjects.has(index) 
                     ? 'opacity-100 translate-y-0' 
                     : 'opacity-0 translate-y-10'

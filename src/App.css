@@ -1,20 +1,18 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-#hero{
-  padding:100px;
-}
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 4em;
+  padding: 1em;
   will-change: filter;
   transition: filter 300ms;
 }
+
+@media (min-width: 768px) {
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+  }
+}
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
@@ -38,9 +36,25 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1.5em;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2em;
+  }
 }
 
 .read-the-docs {
   color: #888;
+}
+
+#hero{
+  padding: 80px 20px;
+}
+
+@media (min-width: 768px) {
+  #hero {
+    padding: 100px;
+  }
 }

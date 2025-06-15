@@ -108,8 +108,8 @@ const Journey = () => {
         </h2>
         
         <div className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-neon-green transform md:-translate-x-px"></div>
+          {/* Timeline Line - centered for mobile, left-positioned for desktop */}
+          <div className="absolute left-1/2 md:left-4 lg:left-1/2 top-0 bottom-0 w-0.5 bg-neon-green transform -translate-x-px md:translate-x-0 lg:-translate-x-px"></div>
           
           {experienceData.map((item, index) => (
             <div 
@@ -123,13 +123,13 @@ const Journey = () => {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              {/* Timeline Dot */}
-              <div className={`absolute left-2 md:left-1/2 w-4 h-4 bg-neon-purple rounded-full border-2 border-neon-green transform md:-translate-x-2 transition-all duration-500 ${
+              {/* Timeline Dot - centered for mobile */}
+              <div className={`absolute left-1/2 md:left-2 lg:left-1/2 w-4 h-4 bg-neon-purple rounded-full border-2 border-neon-green transform -translate-x-2 md:translate-x-0 lg:-translate-x-2 z-10 transition-all duration-500 ${
                 visibleItems.has(index) ? 'animate-glow-pulse scale-100' : 'scale-75'
               }`}></div>
               
-              {/* Content */}
-              <div className={`ml-12 md:ml-0 md:w-5/12 ${index % 2 === 0 ? 'md:ml-auto md:pl-8' : 'md:pr-8'}`}>
+              {/* Content - centered for mobile, alternating for desktop */}
+              <div className={`relative z-20 w-[90%] mx-auto md:w-full md:mx-0 md:ml-12 lg:ml-0 lg:w-5/12 ${index % 2 === 0 ? 'lg:ml-auto lg:pl-8' : 'lg:pr-8'}`}>
                 <div className="section-container">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center text-neon-pink text-sm">

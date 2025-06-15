@@ -27,19 +27,19 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-cyber-dark border-b-2 border-neon-pink p-4 backdrop-blur-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-cyber-dark border-b-2 border-neon-pink p-3 sm:p-4 backdrop-blur-sm">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <a 
           href="#hero" 
-          className="text-3xl md:text-4xl font-orbitron font-bold text-neon-yellow neon-glow transition-all duration-300 hover:text-neon-green"
+          className="text-2xl sm:text-3xl md:text-4xl font-orbitron font-bold text-neon-yellow neon-glow transition-all duration-300 hover:text-neon-green"
         >
           Ishmam
           <span className="hidden sm:inline text-neon-green"> A. Solaiman</span>
         </a>
 
         {/* Social Icons */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-2 sm:space-x-4">
           {socialLinks.map((link, index) => {
             const IconComponent = link.icon;
             return (
@@ -48,10 +48,10 @@ const Navbar = () => {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neon-green hover:text-neon-yellow transition-all duration-300 hover:scale-110 neon-glow"
+                className="text-neon-green hover:text-neon-yellow transition-all duration-300 hover:scale-110 neon-glow p-1"
                 aria-label={link.label}
               >
-                <IconComponent size={24} />
+                <IconComponent size={20} className="sm:w-6 sm:h-6" />
               </a>
             );
           })}
