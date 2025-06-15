@@ -7,7 +7,7 @@ const projectsData = [
   {
     title: "Cosmos",
     description: "Cosmos research lab Website.",
-    imageUrl: "/lovable-uploads/eafc35cf-db92-476a-b7cd-bb3e89eb339b.png",
+    imageUrl: "/lovable-uploads/cosmos.png",
     technologies: ["React", "Next.js", "HTML", "CSS", "JavaScript", "Bootstrap"],
     live: true,
     liveUrl: "https://cosmos.ualr.edu/",
@@ -16,7 +16,7 @@ const projectsData = [
   {
     title: "UBlog",
     description: "A social media website I built for my undergraduate web development course.",
-    imageUrl: "/lovable-uploads/0a645fba-1880-452c-83b3-67b366b74464.png",
+    imageUrl: "/lovable-uploads/0a645fba-1880-452c-83b3-67b366b74464.gif",
     technologies: ["React", "Node.js", "MongoDB", "Express"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/uBlog",
@@ -24,13 +24,22 @@ const projectsData = [
   },
   {
     title: "Disinfectors Inc. Website",
-    description: "A website I built for a startup company that provides disinfection services. Includes a booking system and order tracking.",
-    imageUrl: "/lovable-uploads/07e01232-f3ff-445d-806a-3d99bcd4971d.png",
+    description: "A website I built for my failed disinfections service business that never took off.",
+    imageUrl: "/lovable-uploads/disinfectors.gif",
     technologies: ["HTML", "CSS", "JavaScript", "Bootstrap", "Firebase", "GCP"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/Service_website",
     category: "Web Development"
-  }
+  },
+  {
+    title: "Feedme",
+    description: "Food ordering and delivery app for android built using Kotlin and android studio.",
+    imageUrl: "/lovable-uploads/feedme.gif",
+    technologies: ["Kotlin", "Android Studio"],
+    live: false,
+    githubUrl: "https://github.com/Ishmam97/FeedMee",
+    category: "Mobile Development"
+  },
 ];
 
 // Technology icons mapping
