@@ -1,35 +1,46 @@
-html{
-    padding: 0px;
-    margin: 0px;
-    background-color:#020104;
-}
-body{
-}
-
-@font-face {
-  font-family: 'Creattion';
-  src: url('/public/fonts/Creattion Demo.otf') format('opentype');
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-#navbar{
-   padding: 10px;
-   margin: 0px;
-   border-bottom: 2px solid #ff4081;
-}
-#navbar:hover{
-    box-shadow: 0 0 30px rgba(208, 0, 55, 1);
+#hero{
+  padding:100px;
 }
 
-@keyframes flicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      box-shadow: 0 0 4px rgba(208, 0, 55, 0.678), 
-                  0 0 10px rgba(208, 0, 55, 0.678), 
-                  0 0 15px rgba(208, 0, 55, 1), 
-                  0 0 20px rgba(208, 0, 55, 1), 
-                  0 0 30px rgba(208, 0, 55, 1), 
-                  0 0 40px rgba(208, 0, 55, 1);
-    }
-    20%,32%,55% {        
-      box-shadow: none;
-    }
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
   }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
