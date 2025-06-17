@@ -1,19 +1,23 @@
 
 import React, { useState, useEffect } from 'react';
-import { Home, User, FolderOpen, Briefcase } from 'lucide-react';
+import { Home, User, FolderOpen, Briefcase, BookOpen } from 'lucide-react';
 
 const Navigation = () => {
   const [activeSection, setActiveSection] = useState('hero');
 
   const navItems = [
-    { id: 'hero', icon: Home, label: 'Home' },
-    { id: 'journey', icon: Briefcase, label: 'Journey' },
-    { id: 'projects', icon: FolderOpen, label: 'Projects' }
+    { id: 'hero', icon: Home, label: 'Home', href: '/' },
+    { id: 'journey', icon: Briefcase, label: 'Journey', href: '/#journey' },
+    { id: 'projects', icon: FolderOpen, label: 'Projects', href: '/#projects' },
+    { id: 'blog', icon: BookOpen, label: 'Blog', href: '/blog' }
   ];
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = navItems.map(item => item.id);
+      // Only track sections on the main page
+      if (window.location.pathname !== '/') return;
+      
+      const sections = navItems.filter(item => item.id !== 'blog').map(item => item.id);
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -30,14 +34,32 @@ const Navigation = () => {
       }
     };
 
+    // Set active section based on current path
+    if (window.location.pathname === '/blog') {
+      setActiveSection('blog');
+    } else {
+      handleScroll();
+    }
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [navItems]);
+  }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavigation = (item: typeof navItems[0]) => {
+    if (item.href.startsWith('/#')) {
+      // Navigate to main page section
+      if (window.location.pathname !== '/') {
+        window.location.href = item.href;
+      } else {
+        const sectionId = item.href.replace('/#', '');
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      // Navigate to different page
+      window.location.href = item.href;
     }
   };
 
@@ -53,7 +75,7 @@ const Navigation = () => {
             return (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
+                onClick={() => handleNavigation(item)}
                 className={`p-3 rounded-full transition-all duration-300 group relative ${
                   isActive 
                     ? 'bg-neon-yellow text-cyber-dark shadow-lg' 
@@ -83,7 +105,7 @@ const Navigation = () => {
             return (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
+                onClick={() => handleNavigation(item)}
                 className={`p-3 rounded-full transition-all duration-300 ${
                   isActive 
                     ? 'bg-neon-yellow text-cyber-dark' 
