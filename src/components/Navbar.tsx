@@ -84,8 +84,8 @@ const Navbar = () => {
               <a
                 key={index}
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={link.href.startsWith('http') ? "_blank" : "_self"}
+                rel={link.href.startsWith('http') ? "noopener noreferrer" : undefined}
                 className="text-neon-green hover:text-neon-yellow transition-all duration-300 hover:scale-110 neon-glow p-1"
                 aria-label={link.label}
               >
