@@ -23,6 +23,11 @@ const Navbar = () => {
       icon: Mail,
       href: "mailto:ishmam.a.solaiman@gmail.com",
       label: "Email"
+    },
+    {
+      icon: BookOpen,
+      href: "/blog",
+      label: "Blog"
     }
   ];
 

@@ -1,19 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import ChatbotInterface from './ChatbotInterface';
+
+const roles = [
+  "Software Engineer",
+  "Tech Enthusiast", 
+  "Problem Solver",
+  "Data Scientist"
+];
 
 const Hero = () => {
   const [currentRole, setCurrentRole] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
-  
-  const roles = [
-    "Software Engineer",
-    "Tech Enthusiast", 
-    "Problem Solver",
-    "Data Scientist"
-  ];
+  const [showChatbot, setShowChatbot] = useState(false);
 
   useEffect(() => {
+    if (showChatbot) return; // Don't run typing animation when chatbot is active
+    
     let timeout: NodeJS.Timeout;
     const currentRoleText = roles[currentRole];
     
