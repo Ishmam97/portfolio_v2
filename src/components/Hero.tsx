@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import ChatbotInterface from './ChatbotInterface';
+import AdvancedChatbotInterface from './AdvancedChatbotInterface';
 
 const roles = [
   "Software Engineer",
@@ -91,10 +91,11 @@ const Hero = () => {
             <Button
               type="button"
               onClick={handleChatbotToggle}
-              className="bg-neon-purple hover:bg-neon-purple/80 text-cyber-dark font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-neon-purple/50"
+              className="bg-neon-purple hover:bg-neon-purple/80 text-cyber-dark font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-neon-purple/50 flex items-center gap-2"
               tabIndex={0}
             >
-              Talk to my digital twin 🤖
+              <span className="animate-pulse">🧠</span>
+              Talk to my AI-powered digital twin
             </Button>
           </div>
 
@@ -137,7 +138,7 @@ const Hero = () => {
               </>
             ) : (
               <div className="mt-2 w-full h-full max-w-2xl flex flex-col justify-start items-center">
-                <ChatbotInterface onClose={() => handleChatbotToggle()} />
+                <AdvancedChatbotInterface onClose={() => handleChatbotToggle()} />
               </div>
             )}
             </div>
