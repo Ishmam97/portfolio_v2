@@ -82,7 +82,7 @@ const Hero = () => {
           <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center">
             <div className="relative mb-6">
               <img 
-                src="/lovable-uploads/37f3133f-ab50-4576-940c-83312c5bcf0b.png" 
+                src="/lovable-uploads/IMG_5747.jpeg"
                 alt="Ishmam A. Solaiman" 
                 className="w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300"
               />
