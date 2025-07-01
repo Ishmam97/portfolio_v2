@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import AdvancedChatbotInterface from './AdvancedChatbotInterface';
@@ -73,35 +72,42 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="min-h-[900px] flex items-center justify-center px-4 py-16 md:py-20 relative"
+      className={`min-h-[900px] flex items-center justify-center ${showChatbot ? 'px-0' : 'px-4'} py-16 md:py-20 relative`}
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
       <div className="section-container w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
-          {/* Profile Image */}
+          {/* Profile Image - Always first on mobile, second on desktop */}
           <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center">
-            <div className="relative mb-6">
+            <div className={`relative mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
               <img 
                 src="/lovable-uploads/IMG_5747.jpeg"
                 alt="Ishmam A. Solaiman" 
-                className="w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300"
+                className={`rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300 ${
+                  showChatbot 
+                    ? 'w-20 h-20 sm:w-24 sm:h-24 lg:w-80 lg:h-80' 
+                    : 'w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80'
+                }`}
               />
             </div>
             
             <Button
               type="button"
               onClick={handleChatbotToggle}
-              className="bg-neon-purple hover:bg-neon-purple/80 text-cyber-dark font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-neon-purple/50 flex items-center gap-2"
+              className={`bg-neon-purple hover:bg-neon-purple/80 text-cyber-dark font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-neon-purple/50 flex items-center gap-2 ${
+                showChatbot ? 'hidden sm:flex' : 'flex'
+              }`}
               tabIndex={0}
             >
-              <span className="animate-pulse">🧠</span>
-              Talk to my AI-powered digital twin
+              <span className="animate-pulse">{showChatbot ? '❌' : '🧠'}</span>
+              {showChatbot ? 'Close chatbot' : 'Talk to my AI-powered digital twin'}
             </Button>
           </div>
 
-          {/* Text/Chat Section (fixed height for layout stability) */}
+          {/* Text/Chat Section - Always second on mobile, first on desktop */}
+          {!showChatbot ? (    
           <div
-            className="flex-1 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center"
+            className="flex-1 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center px-4 lg:px-0"
             style={{
               minHeight: 512,
               maxHeight: 600,
@@ -114,8 +120,7 @@ const Hero = () => {
             </h1>
             
             <div style={{ width: '100%', height: '100%' }}>
-            {!showChatbot ? (
-              <>
+
                 <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-8 lg:mb-10 h-10 sm:h-12 flex items-center justify-center lg:justify-start">
                   <span className="text-neon-green font-semibold">
                     {displayText}
@@ -123,11 +128,11 @@ const Hero = () => {
                   <span className="animate-pulse text-neon-yellow ml-1">|</span>
                 </div>
 
-                <p className="text-neon-pink text-base sm:text-lg md:text-xl mb-8 lg:mb-10 max-w-2xl animate-fade-in-up delay-300 px-4 lg:px-0">
+                <p className="text-neon-pink text-base sm:text-lg md:text-xl mb-8 lg:mb-10 max-w-2xl animate-fade-in-up delay-300">
                   Passionate self taught Web Application Developer, Data Scientist, Ai Application Engineer focusing on topics such as:
                 </p>
 
-                <div className="space-y-4 lg:space-y-6 animate-fade-in-up delay-500 px-4 lg:px-0">
+                <div className="space-y-4 lg:space-y-6 animate-fade-in-up delay-500">
                   {specialties.map((specialty, index) => (
                     <div key={index} className="flex items-start lg:items-center justify-center lg:justify-start text-neon-pink text-sm sm:text-base lg:text-lg">
                       <span className="text-xl sm:text-2xl mr-3 lg:mr-4 flex-shrink-0">{specialty.emoji}</span>
@@ -135,18 +140,17 @@ const Hero = () => {
                     </div>
                   ))}
                 </div>
-              </>
+            </div>
+          </div>
             ) : (
-              <div className="mt-2 w-full h-full max-w-2xl flex flex-col justify-start items-center">
+              <div className="order-2 lg:order-1 w-full h-full flex flex-col justify-start items-center">
                 <AdvancedChatbotInterface onClose={() => handleChatbotToggle()} />
               </div>
             )}
-            </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-};
-
-export default Hero;
+      </section>
+    );
+  };
+  
+  export default Hero;

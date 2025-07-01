@@ -87,89 +87,114 @@ serve(async (req) => {
     }
 
     // Generate response using OpenRouter
-    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openRouterApiKey}`,
-        'HTTP-Referer': 'https://www.ishmamsolaiman.com', // Optional but recommended
-        'X-Title': 'Ishmam Digital Twin', // Optional but recommended
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
+    if (!geminiApiKey) {
+    throw new Error('GEMINI_API_KEY is not configured')
+    }
+
+    // Generate response using Gemini API
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    method: 'POST',
+    headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3-0324:free', // You can also use 'deepseek/deepseek-chat-v3-0324:free' for free tier
-        messages: [
-          {
-            role: 'system',
-            content: `You are Ishmam's digital twin, an AI assistant that represents Ishmam A. Solaiman professionally. You should respond in first person as if you are Ishmam himself.
+    },
+    body: JSON.stringify({
+        contents: [
+        {
+            parts: [
+            {
+                text: `You are Ishmam's digital twin, an AI assistant that represents Ishmam A. Solaiman professionally. You should respond in first person as if you are Ishmam himself.
 
-Key personality traits:
-- Professional but approachable
-- Passionate about AI, machine learning, and software development
-- Confident but humble about achievements
-- Always eager to discuss technology and innovation
+    Key personality traits:
+    - Professional but approachable
+    - Passionate about AI, machine learning, and software development
+    - Confident but humble about achievements
+    - Always eager to discuss technology and innovation
 
-Use the following context about Ishmam to answer questions accurately:
+    Use the following context about Ishmam to answer questions accurately:
 
-${context}
+    ${context}
 
-Important guidelines:
-1. Always respond in first person (use "I", "my", "me")
-2. Be specific about achievements and technologies mentioned
-3. If asked about something not in the context, politely redirect to areas you know about
-4. Keep responses conversational but professional
-5. Highlight relevant experience and skills
-6. Don't make up information not provided in the context`
-          },
-          {
-            role: 'user',
-            content: message
-          }
+    Important guidelines:
+    1. Always respond in first person (use "I", "my", "me")
+    2. Be specific about achievements and technologies mentioned
+    3. If asked about something not in the context, politely redirect to areas you know about
+    4. Keep responses conversational but professional
+    5. Highlight relevant experience and skills
+    6. Don't make up information not provided in the context
+
+    User question: ${message}`
+            }
+            ]
+        }
         ],
+        generationConfig: {
         temperature: 0.7,
-        max_tokens: 500
-      })
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 500,
+        },
+        safetySettings: [
+        {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+        ]
+    })
     })
 
-    if (!openRouterResponse.ok) {
-      const errorData = await openRouterResponse.text()
-      console.error('OpenRouter API error:', errorData)
-      throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData}`)
+    if (!geminiResponse.ok) {
+    const errorData = await geminiResponse.text()
+    console.error('Gemini API error:', errorData)
+    throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorData}`)
     }
 
-    const aiResponse = await openRouterResponse.json()
+    const aiResponse = await geminiResponse.json()
 
     // Check if the response has the expected structure
-    if (!aiResponse.choices || !aiResponse.choices[0]?.message?.content) {
-      console.error('Unexpected OpenRouter response structure:', aiResponse)
-      throw new Error('Invalid response from OpenRouter API')
+    if (!aiResponse.candidates || !aiResponse.candidates[0]?.content?.parts?.[0]?.text) {
+    console.error('Unexpected Gemini response structure:', aiResponse)
+    throw new Error('Invalid response from Gemini API')
     }
 
-    const botMessage = aiResponse.choices[0].message.content
+    const botMessage = aiResponse.candidates[0].content.parts[0].text
 
     return new Response(
-      JSON.stringify({ 
+    JSON.stringify({ 
         response: botMessage,
         relevantSections: relevantSections.map(s => ({ 
-          title: s.title, 
-          section_type: s.section_type 
+        title: s.title, 
+        section_type: s.section_type 
         }))
-      }),
-      {
+    }),
+    {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+    },
     )
 
-  } catch (error) {
+    } catch (error) {
     console.error('Error in rag-chat function:', error)
     return new Response(
-      JSON.stringify({ 
+    JSON.stringify({ 
         response: "I'm sorry, I encountered an error processing your question. Please try again.",
         error: error.message 
-      }),
-      {
+    }),
+    {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+    },
     )
-  }
+    }
 })

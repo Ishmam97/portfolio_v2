@@ -100,59 +100,126 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
   }, [initializeTTS]);
 
   // Enhanced voice selection function
-  const selectBestVoice = useCallback(() => {
+  // Enhanced voice selection function for male voices across all browsers
+  const selectBestMaleVoice = useCallback(() => {
     const voices = speechSynthesis.getVoices();
 
-    // Priority list for deep male voices
+    // Comprehensive priority list for male voices across different platforms
     const voicePreferences = [
-      // Google voices (tend to be higher quality)
+      // High-quality Google voices
       { name: "Google UK English Male", lang: "en-GB" },
       { name: "Google US English Male", lang: "en-US" },
+
+      // Microsoft Windows voices
+      { name: "Microsoft David Desktop", lang: "en-US" },
       { name: "Microsoft David", lang: "en-US" },
       { name: "Microsoft Mark", lang: "en-US" },
       { name: "Microsoft Richard", lang: "en-US" },
-      // Generic fallbacks
-      { name: /male/i, lang: /en/ },
-      { name: /david/i, lang: /en/ },
-      { name: /james/i, lang: /en/ },
-      { name: /richard/i, lang: /en/ },
+      { name: "Microsoft George", lang: "en-GB" },
+
+      // macOS/iOS voices
+      { name: "Alex", lang: "en-US" },
+      { name: "Daniel", lang: "en-GB" },
+      { name: "Fred", lang: "en-US" },
+      { name: "Oliver", lang: "en-GB" },
+      { name: "Arthur", lang: "en-GB" },
+      { name: "Albert", lang: "en-US" },
+
+      // Android voices
+      { name: "en-us-x-sfg#male_1-local", lang: "en-US" },
+      { name: "en-us-x-sfg#male_2-local", lang: "en-US" },
+      { name: "en-gb-x-gbg#male_1-local", lang: "en-GB" },
+      { name: "en-gb-x-gbg#male_2-local", lang: "en-GB" },
+
+      // Chrome OS voices
+      { name: "Chrome OS US English 1", lang: "en-US" },
+      { name: "Chrome OS UK English 1", lang: "en-GB" },
+
+      // Generic pattern matching (regex patterns)
+      { pattern: /male/i, lang: /^en/ },
+      {
+        pattern:
+          /(david|daniel|alex|fred|oliver|arthur|albert|george|mark|richard|james|john|michael|robert|william|thomas|charles|christopher|matthew|anthony|donald|steven|paul|andrew|joshua|kenneth|kevin|brian|edward|ronald|timothy|jason|jeffrey|ryan|jacob|gary|nicholas|eric|jonathan|stephen|larry|justin|scott|brandon|benjamin|samuel|gregory|frank|raymond|alexander|patrick|jack|dennis|jerry|tyler|aaron|jose|henry|adam|douglas|nathan|peter|zachary|kyle|noah|alan|ethan|lucas|jeremy|jose|harold|walter|peter|carl|arthur|roger|albert|joe|sean|bryan|wayne|louis|eugene|roy|juan|mason|lawrence|bobby|austin|oscar|christian|lee|craig|arthur|noah|owen|liam|eli|carlos|antonio|henry|jesus|jeremy|alan|keith|ethan)/i,
+        lang: /^en/,
+      },
+
+      // Fallback patterns
+      { pattern: /man/i, lang: /^en/ },
+      { pattern: /guy/i, lang: /^en/ },
+      { pattern: /boy/i, lang: /^en/ },
     ];
+
+    // Helper function to check if voice matches preference
+    const matchesPreference = (voice, pref) => {
+      let nameMatch = false;
+      let langMatch = false;
+
+      // Check name/pattern match
+      if (pref.name) {
+        nameMatch =
+          typeof pref.name === "string"
+            ? voice.name.includes(pref.name)
+            : pref.name.test(voice.name);
+      } else if (pref.pattern) {
+        nameMatch = pref.pattern.test(voice.name);
+      }
+
+      // Check language match
+      if (typeof pref.lang === "string") {
+        langMatch = voice.lang.startsWith(pref.lang);
+      } else if (pref.lang instanceof RegExp) {
+        langMatch = pref.lang.test(voice.lang);
+      }
+
+      return nameMatch && langMatch;
+    };
 
     // Try to find the best matching voice
     for (const pref of voicePreferences) {
-      const voice = voices.find((v) => {
-        const nameMatch =
-          typeof pref.name === "string"
-            ? v.name.includes(pref.name)
-            : pref.name.test(v.name);
-        const langMatch =
-          typeof pref.lang === "string"
-            ? v.lang.startsWith(pref.lang)
-            : pref.lang.test(v.lang);
-        return nameMatch && langMatch;
-      });
-
-      if (voice) return voice;
+      const voice = voices.find((v) => matchesPreference(v, pref));
+      if (voice) {
+        console.log(`Selected voice: ${voice.name} (${voice.lang})`);
+        return voice;
+      }
     }
 
-    // Fallback: any English male voice
-    const maleVoice = voices.find((v) =>
-      v.lang.startsWith("en") &&
-      (v.name.toLowerCase().includes("male") ||
-        v.name.toLowerCase().includes("david") ||
-        v.name.toLowerCase().includes("james"))
+    // Enhanced fallback: look for any English voice that might be male
+    const potentialMaleVoice = voices.find(
+      (v) =>
+        v.lang.startsWith("en") &&
+        !/(female|woman|girl|lady|she|her|feminine)/i.test(v.name)
     );
 
-    if (maleVoice) return maleVoice;
+    if (potentialMaleVoice) {
+      console.log(
+        `Fallback voice: ${potentialMaleVoice.name} (${potentialMaleVoice.lang})`
+      );
+      return potentialMaleVoice;
+    }
 
-    // Final fallback: any English voice
-    return voices.find((v) => v.lang.startsWith("en")) || voices[0];
+    // Final fallback: any English voice or first available
+    const englishVoice = voices.find((v) => v.lang.startsWith("en"));
+    const finalVoice = englishVoice || voices[0];
+
+    if (finalVoice) {
+      console.log(
+        `Final fallback voice: ${finalVoice.name} (${finalVoice.lang})`
+      );
+    }
+
+    return finalVoice;
   }, []);
 
   // Enhanced speak text function
   const speakText = useCallback(
     (text: string, messageId?: string) => {
       if (!isTTSAvailable || !isTTSEnabled || !text.trim()) {
+        return;
+      }
+
+      // Prevent speaking the same message if it's already being processed
+      if (messageId && currentSpeakingMessageId === messageId) {
+        console.log("Already speaking this message, skipping");
         return;
       }
 
@@ -182,28 +249,42 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         speakChunks(chunks, 0);
       }, 100);
     },
-    [isTTSAvailable, isTTSEnabled]
+    [isTTSAvailable, isTTSEnabled, currentSpeakingMessageId] // Removed speakChunks dependency
   );
 
-  // Auto-read initial message with proper timing
   useEffect(() => {
     if (!isTTSAvailable || !isTTSEnabled || !voicesLoaded) return;
 
-    const last = messages[messages.length - 1];
-    // only read brand-new bot replies (skip if already speaking that id)
-    if (last && last.isBot && last.id !== currentSpeakingMessageId) {
+    const lastMessage = messages[messages.length - 1];
+
+    // Only read brand-new bot replies that we haven't already started speaking
+    if (
+      lastMessage &&
+      lastMessage.isBot &&
+      lastMessage.id !== currentSpeakingMessageId &&
+      !isSpeaking &&
+      !isProcessingSpeech
+    ) {
+      console.log("Auto-reading new bot message:", lastMessage.id);
+
       const timer = setTimeout(() => {
-        speakText(last.text, last.id);
+        // Double-check we're still not speaking before starting
+        if (!isSpeaking && !isProcessingSpeech) {
+          speakText(lastMessage.text, lastMessage.id);
+        }
       }, 500);
+
       return () => clearTimeout(timer);
     }
   }, [
-    messages,
+    messages, // Only depend on messages array
     isTTSAvailable,
     isTTSEnabled,
     voicesLoaded,
-    speakText,
     currentSpeakingMessageId,
+    isSpeaking,
+    isProcessingSpeech,
+    // Remove speakText from dependencies to prevent infinite loop
   ]);
 
   useEffect(() => {
@@ -217,7 +298,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
   const splitTextIntoChunks = (text: string, maxLength = 150): string[] => {
     // Clean text first
     const cleanText = text
-      .replace(/[\*_`#]/g, "")
+      .replace(/[*_`#]/g, "")
       .replace(/\n+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
@@ -287,15 +368,25 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
   };
 
   // Enhanced speech synthesis with better error'Universidad handling
+  // Enhanced speech synthesis with better error handling and proper completion
   const speakChunks = useCallback(
     (chunks: string[], startIndex: number = 0) => {
+      // Check if we've reached the end of all chunks
       if (startIndex >= chunks.length || !isTTSEnabled) {
+        // Clean up and stop everything when all chunks are complete
         setIsSpeaking(false);
         setIsProcessingSpeech(false);
         setCurrentSpeakingMessageId(null);
         setSpeechQueue([]);
         setCurrentChunkIndex(0);
         currentUtteranceRef.current = null;
+
+        // Clear any pending timeouts
+        if (speechTimeoutRef.current) {
+          clearTimeout(speechTimeoutRef.current);
+          speechTimeoutRef.current = null;
+        }
+
         return;
       }
 
@@ -311,13 +402,13 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
       setIsProcessingSpeech(true);
 
       // Configure speech settings for deep male voice
-      utterance.rate = 0.9; // Slower for deeper effect
+      utterance.rate = 1.2; // Slower for deeper effect
       utterance.pitch = 0.5; // Lower pitch for deeper voice
       utterance.volume = 1.0; // Full volume
       utterance.lang = "en-US";
 
       // Select the best available voice
-      const bestVoice = selectBestVoice();
+      const bestVoice = selectBestMaleVoice();
       if (bestVoice) {
         utterance.voice = bestVoice;
         console.log(`Using voice: ${bestVoice.name}`);
@@ -340,7 +431,22 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
 
       utterance.onend = () => {
         hasEnded = true;
-        // Add a small pause between chunks for natural flow
+        console.log(`Finished chunk ${startIndex + 1} of ${chunks.length}`);
+
+        // Check if this was the last chunk
+        if (startIndex + 1 >= chunks.length) {
+          console.log("All chunks completed, stopping speech");
+          // This was the last chunk - clean up and stop
+          setIsSpeaking(false);
+          setIsProcessingSpeech(false);
+          setCurrentSpeakingMessageId(null);
+          setSpeechQueue([]);
+          setCurrentChunkIndex(0);
+          currentUtteranceRef.current = null;
+          return;
+        }
+
+        // Continue to next chunk with a small pause for natural flow
         setTimeout(() => {
           speakChunks(chunks, startIndex + 1);
         }, 300);
@@ -351,17 +457,31 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         setIsProcessingSpeech(false);
 
         // Common errors and their handling
-        if (event.error === "interrupted" || event.error === "cancelled") {
+        if (event.error === "interrupted") {
           // User interrupted, don't continue
           setIsSpeaking(false);
           setCurrentSpeakingMessageId(null);
+          setSpeechQueue([]);
+          setCurrentChunkIndex(0);
+          currentUtteranceRef.current = null;
           return;
         }
 
         // For other errors, try the next chunk after a delay
-        setTimeout(() => {
-          speakChunks(chunks, startIndex + 1);
-        }, 500);
+        // But only if we haven't reached the end
+        if (startIndex + 1 < chunks.length) {
+          setTimeout(() => {
+            speakChunks(chunks, startIndex + 1);
+          }, 500);
+        } else {
+          // This was the last chunk and it errored - clean up
+          setIsSpeaking(false);
+          setIsProcessingSpeech(false);
+          setCurrentSpeakingMessageId(null);
+          setSpeechQueue([]);
+          setCurrentChunkIndex(0);
+          currentUtteranceRef.current = null;
+        }
       };
 
       // Try to speak
@@ -378,19 +498,43 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
             if (!hasStarted && !hasEnded) {
               console.warn("Speech didn't start, moving to next chunk");
               speechSynthesis.cancel();
-              speakChunks(chunks, startIndex + 1);
+
+              // Only continue if there are more chunks
+              if (startIndex + 1 < chunks.length) {
+                speakChunks(chunks, startIndex + 1);
+              } else {
+                // This was the last chunk - clean up
+                setIsSpeaking(false);
+                setIsProcessingSpeech(false);
+                setCurrentSpeakingMessageId(null);
+                setSpeechQueue([]);
+                setCurrentChunkIndex(0);
+                currentUtteranceRef.current = null;
+              }
             }
           }, 3000);
         }, 100);
       } catch (error) {
         console.error("Error speaking chunk:", error);
         setIsProcessingSpeech(false);
-        setTimeout(() => {
-          speakChunks(chunks, startIndex + 1);
-        }, 500);
+
+        // Only continue if there are more chunks
+        if (startIndex + 1 < chunks.length) {
+          setTimeout(() => {
+            speakChunks(chunks, startIndex + 1);
+          }, 500);
+        } else {
+          // This was the last chunk - clean up
+          setIsSpeaking(false);
+          setIsProcessingSpeech(false);
+          setCurrentSpeakingMessageId(null);
+          setSpeechQueue([]);
+          setCurrentChunkIndex(0);
+          currentUtteranceRef.current = null;
+        }
       }
     },
-    [isTTSEnabled, selectBestVoice]
+    [isTTSEnabled, selectBestMaleVoice]
   );
 
   // Enhanced stop speaking function
@@ -457,7 +601,12 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         return { icon: "play", title: "Play message" };
       }
     },
-    [currentSpeakingMessageId, isSpeaking, isProcessingSpeech, speechQueue.length]
+    [
+      currentSpeakingMessageId,
+      isSpeaking,
+      isProcessingSpeech,
+      speechQueue.length,
+    ]
   );
 
   // Toggle TTS with better feedback
@@ -502,7 +651,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
     setIsTyping(true);
 
     // Stop any current speech when sending a message
-    if (isSpeaking) {
+    if (isSpeaking || isProcessingSpeech) {
       stopSpeaking();
     }
 
@@ -524,6 +673,8 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
       };
 
       setMessages((prev) => [...prev, botResponse]);
+
+      // Note: Don't manually trigger speakText here - let the useEffect handle it
     } catch (error: unknown) {
       console.error("Error getting AI response:", error);
 
@@ -536,11 +687,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
 
       setMessages((prev) => [...prev, errorMessage]);
 
-      if (isTTSEnabled && voicesLoaded) {
-        setTimeout(() => {
-          speakText(errorMessage.text, errorMessage.id);
-        }, 500);
-      }
+      // Note: Don't manually trigger speakText here either - let the useEffect handle it
 
       toast({
         variant: "destructive",
@@ -580,9 +727,9 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         <div className="flex items-center gap-2">
           <Brain className="text-neon-green w-5 h-5" />
           <span className="text-neon-yellow font-semibold">
-            AI-Powered Digital Twin
+            Ishmam's Digital Twin 🤖
           </span>
-          <div className="flex items-center gap-1 text-xs text-neon-pink">
+          <div className="flex items-center gap-1 text-xs text-neon-pink md:visible invisible">
             <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
             RAG Enabled
           </div>
