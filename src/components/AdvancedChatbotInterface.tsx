@@ -727,9 +727,9 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         <div className="flex items-center gap-2">
           <Brain className="text-neon-green w-5 h-5" />
           <span className="text-neon-yellow font-semibold">
-            AI-Powered Digital Twin
+            Ishmam's Digital Twin 🤖
           </span>
-          <div className="flex items-center gap-1 text-xs text-neon-pink">
+          <div className="flex items-center gap-1 text-xs text-neon-pink md:visible invisible">
             <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
             RAG Enabled
           </div>
