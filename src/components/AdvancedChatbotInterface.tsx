@@ -715,11 +715,12 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
 
   return (
     <div
-      className="bg-cyber-darker border-2 border-neon-purple rounded-lg p-4 max-w-2xl w-full animate-fade-in h-[22.5rem] flex flex-col"
+      className="bg-cyber-darker border-2 border-neon-purple rounded-lg p-4 max-w-2xl w-full animate-fade-in flex flex-col h-full"
       tabIndex={-1}
       style={{
-        minHeight: "22.5rem",
-        maxHeight: "22.5rem",
+        minHeight: 0,
+        maxHeight: '100%',
+        height: '100%'
       }}
     >
       {/* Header */}

@@ -93,7 +93,7 @@ serve(async (req) => {
     }
 
     // Generate response using Gemini API
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-lite:generateContent?key=${geminiApiKey}`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
