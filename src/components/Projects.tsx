@@ -29,7 +29,7 @@ const projectsData = [
   {
     title: "Interviewer AI",
     description: "A mock technical interview platform using Retrieval-Augmented Generation. Upload your resume and job description to simulate personalized interview sessions.",
-    imageUrl: "/lovable-uploads/interviewer.png",
+    imageUrl: "/assets/interviewer.png",
     technologies: ["Python", "Streamlit", "LangGraph", "LangSmith", "FAISS", "Docker", "Supabase", "OpenAI"],
     live: true,
     liveUrl: "https://interviewerai-ishmamdemo.streamlit.app/",
@@ -39,7 +39,7 @@ const projectsData = [
   {
     title: "UALR Graduate School Chatbot",
     description: "An AI-powered chatbot for the UALR Graduate Admissions Office, enabling prospective students to query program info and admissions details via natural language.",
-    imageUrl: "/lovable-uploads/ualr_chatbot.png",
+    imageUrl: "/assets/ualr_chatbot.png",
     technologies: ["Python", "Streamlit", "LangChain", "FAISS", "RAG", "Docker", "Gemini", "Supabase", "LangSmith"],
     live: true,
     liveUrl: "https://ualrchatbot.streamlit.app/",
@@ -49,7 +49,7 @@ const projectsData = [
   {
     title: "Cosmos",
     description: "Cosmos research lab Website.",
-    imageUrl: "/lovable-uploads/cosmos.png",
+    imageUrl: "/assets/cosmos.png",
     technologies: ["React", "Next.js", "HTML", "CSS", "JavaScript", "Bootstrap"],
     live: true,
     liveUrl: "https://cosmos.ualr.edu/",
@@ -58,7 +58,7 @@ const projectsData = [
   {
     title: "UBlog",
     description: "A social media website I built for my undergraduate web development course.",
-    imageUrl: "/lovable-uploads/0a645fba-1880-452c-83b3-67b366b74464.gif",
+    imageUrl: "/assets/0a645fba-1880-452c-83b3-67b366b74464.gif",
     technologies: ["React", "Node.js", "MongoDB", "Express"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/uBlog",
@@ -67,7 +67,7 @@ const projectsData = [
   {
     title: "Disinfectors Inc. Website",
     description: "A website I built for my failed disinfections service business that never took off.",
-    imageUrl: "/lovable-uploads/disinfectors.gif",
+    imageUrl: "/assets/disinfectors.gif",
     technologies: ["HTML", "CSS", "JavaScript", "Bootstrap", "Firebase", "GCP"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/Service_website",
@@ -76,7 +76,7 @@ const projectsData = [
   {
     title: "Feedme",
     description: "A mobile food ordering and delivery app built using Kotlin and Android Studio.",
-    imageUrl: "/lovable-uploads/feedme.gif",
+    imageUrl: "/assets/feedme.gif",
     technologies: ["Kotlin", "Android Studio"],
     live: false,
     githubUrl: "https://github.com/Ishmam97/FeedMee",

@@ -81,7 +81,7 @@ const Hero = () => {
           <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center">
             <div className={`relative mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
               <img 
-                src="/lovable-uploads/IMG_5747.jpeg"
+                src="/assets/IMG_5747.jpeg"
                 alt="Ishmam A. Solaiman" 
                 className={`rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300 ${
                   showChatbot 
