@@ -72,7 +72,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className={`min-h-[900px] flex items-center justify-center ${showChatbot ? 'px-0' : 'px-4'} py-16 md:py-20 relative`}
+      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-4'} py-8 md:py-12 relative min-h-[900px] lg:min-h-[85vh]`}
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
       <div className="section-container w-full max-w-6xl">
@@ -143,7 +143,7 @@ const Hero = () => {
             </div>
           </div>
             ) : (
-              <div className="order-2 lg:order-1 w-full h-full flex flex-col justify-start items-center">
+              <div className="flex-1 order-2 lg:order-1 w-full h-full flex flex-col justify-center items-center min-h-[512px] max-h-[600px] px-4 lg:px-0">
                 <AdvancedChatbotInterface onClose={() => handleChatbotToggle()} />
               </div>
             )}
