@@ -210,90 +210,6 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
     return finalVoice;
   }, []);
 
-  // Enhanced speak text function
-  const speakText = useCallback(
-    (text: string, messageId?: string) => {
-      if (!isTTSAvailable || !isTTSEnabled || !text.trim()) {
-        return;
-      }
-
-      // Prevent speaking the same message if it's already being processed
-      if (messageId && currentSpeakingMessageId === messageId) {
-        console.log("Already speaking this message, skipping");
-        return;
-      }
-
-      // Stop any current speech
-      if (currentUtteranceRef.current) {
-        speechSynthesis.cancel();
-        currentUtteranceRef.current = null;
-      }
-
-      // Clear any pending timeouts
-      if (speechTimeoutRef.current) {
-        clearTimeout(speechTimeoutRef.current);
-      }
-
-      // Split into optimized chunks
-      const chunks = splitTextIntoChunks(text);
-
-      console.log(`Speaking ${chunks.length} chunks for message:`, messageId);
-
-      retryCountsRef.current = {};
-      setSpeechQueue(chunks);
-      setCurrentChunkIndex(0);
-      setCurrentSpeakingMessageId(messageId || null);
-
-      // Small delay to ensure UI updates
-      setTimeout(() => {
-        speakChunks(chunks, 0);
-      }, 100);
-    },
-    [isTTSAvailable, isTTSEnabled, currentSpeakingMessageId] // Removed speakChunks dependency
-  );
-
-  useEffect(() => {
-    if (!isTTSAvailable || !isTTSEnabled || !voicesLoaded) return;
-
-    const lastMessage = messages[messages.length - 1];
-
-    // Only read brand-new bot replies that we haven't already started speaking
-    if (
-      lastMessage &&
-      lastMessage.isBot &&
-      lastMessage.id !== currentSpeakingMessageId &&
-      !isSpeaking &&
-      !isProcessingSpeech
-    ) {
-      console.log("Auto-reading new bot message:", lastMessage.id);
-
-      const timer = setTimeout(() => {
-        // Double-check we're still not speaking before starting
-        if (!isSpeaking && !isProcessingSpeech) {
-          speakText(lastMessage.text, lastMessage.id);
-        }
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [
-    messages, // Only depend on messages array
-    isTTSAvailable,
-    isTTSEnabled,
-    voicesLoaded,
-    currentSpeakingMessageId,
-    isSpeaking,
-    isProcessingSpeech,
-    // Remove speakText from dependencies to prevent infinite loop
-  ]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [messages]);
-
   // Improved chunk splitting for better speech flow
   const splitTextIntoChunks = (text: string, maxLength = 150): string[] => {
     // Clean text first
@@ -367,7 +283,6 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
     return chunks.filter((chunk) => chunk.length > 0);
   };
 
-  // Enhanced speech synthesis with better error'Universidad handling
   // Enhanced speech synthesis with better error handling and proper completion
   const speakChunks = useCallback(
     (chunks: string[], startIndex: number = 0) => {
@@ -536,6 +451,93 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
     },
     [isTTSEnabled, selectBestMaleVoice]
   );
+
+  // Enhanced speak text function
+  const speakText = useCallback(
+    (text: string, messageId?: string) => {
+      if (!isTTSAvailable || !isTTSEnabled || !text.trim()) {
+        return;
+      }
+
+      // Prevent speaking the same message if it's already being processed or was just spoken
+      if (messageId && currentSpeakingMessageId === messageId) {
+        // Prevent repeat if already spoken
+        return;
+      }
+
+      // Stop any current speech
+      if (currentUtteranceRef.current) {
+        speechSynthesis.cancel();
+        currentUtteranceRef.current = null;
+      }
+
+      // Clear any pending timeouts
+      if (speechTimeoutRef.current) {
+        clearTimeout(speechTimeoutRef.current);
+      }
+
+      // Split into optimized chunks
+      const chunks = splitTextIntoChunks(text);
+
+      retryCountsRef.current = {};
+      setSpeechQueue(chunks);
+      setCurrentChunkIndex(0);
+      setCurrentSpeakingMessageId(messageId || null);
+
+      // Mark this message as spoken to prevent repeat
+      setLastSpokenMessageId(messageId || null);
+
+      // Small delay to ensure UI updates
+      setTimeout(() => {
+        speakChunks(chunks, 0);
+      }, 100);
+    },
+    [isTTSAvailable, isTTSEnabled, currentSpeakingMessageId, speakChunks]
+  );
+
+  // Track the last spoken message to prevent repeat
+  const [lastSpokenMessageId, setLastSpokenMessageId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isTTSAvailable || !isTTSEnabled || !voicesLoaded) return;
+
+    const lastMessage = messages[messages.length - 1];
+
+    // Only read brand-new bot replies that we haven't already started speaking or spoken
+    if (
+      lastMessage &&
+      lastMessage.isBot &&
+      lastMessage.id !== currentSpeakingMessageId &&
+      lastMessage.id !== lastSpokenMessageId &&
+      !isSpeaking &&
+      !isProcessingSpeech
+    ) {
+      const timer = setTimeout(() => {
+        if (!isSpeaking && !isProcessingSpeech) {
+          speakText(lastMessage.text, lastMessage.id);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    messages,
+    isTTSAvailable,
+    isTTSEnabled,
+    voicesLoaded,
+    currentSpeakingMessageId,
+    isSpeaking,
+    isProcessingSpeech,
+    lastSpokenMessageId,
+    speakText,
+  ]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages]);
 
   // Enhanced stop speaking function
   const stopSpeaking = useCallback(() => {
