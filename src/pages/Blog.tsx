@@ -15,6 +15,8 @@ interface BlogPost {
   title: string;
   body: string;
   image_url?: string;
+  media_url?: string;
+  media_type?: 'image' | 'video';
   author_id: string;
   created_at: string;
   updated_at: string;
@@ -257,7 +259,7 @@ const Blog = () => {
         variant: "destructive"
       });
     } else {
-      setPosts(data || []);
+      setPosts((data || []) as BlogPost[]);
     }
     setLoading(false);
   };
@@ -398,6 +400,56 @@ const Blog = () => {
     });
   };
 
+  const renderMedia = (post: BlogPost) => {
+    // Priority: media_url/media_type over legacy image_url
+    const mediaUrl = post.media_url || post.image_url;
+    const mediaType = post.media_type || 'image';
+
+    if (!mediaUrl) return null;
+
+    if (mediaType === 'video') {
+      // Check if it's a YouTube URL
+      const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const youtubeMatch = mediaUrl.match(youtubeRegex);
+      
+      if (youtubeMatch) {
+        const videoId = youtubeMatch[1];
+        return (
+          <div className="aspect-video mb-4">
+            <iframe
+              className="w-full h-full rounded-lg"
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        );
+      } else {
+        return (
+          <video 
+            className="w-full rounded-lg mb-4 bg-cyber-dark" 
+            controls
+            style={{ maxHeight: '400px' }}
+          >
+            <source src={mediaUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        );
+      }
+    } else {
+      return (
+        <img
+          src={mediaUrl}
+          alt={post.title}
+          className="w-full h-64 object-contain rounded-lg mb-4 bg-cyber-dark cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={() => setEnlargedImage(mediaUrl)}
+        />
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-cyber-dark">
       <Navbar />
@@ -490,14 +542,7 @@ const Blog = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {post.image_url && (
-                      <img
-                        src={post.image_url}
-                        alt={post.title}
-                        className="w-full h-64 object-contain rounded-lg mb-4 bg-cyber-dark cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setEnlargedImage(post.image_url)}
-                      />
-                    )}
+                    {renderMedia(post)}
                     <div className="text-neon-green whitespace-pre-wrap mb-4">
                       {post.body}
                     </div>
