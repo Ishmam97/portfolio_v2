@@ -31,18 +31,18 @@ const projectsData = [
     description: "A mock technical interview platform using Retrieval-Augmented Generation. Upload your resume and job description to simulate personalized interview sessions.",
     imageUrl: "/assets/interviewer.png",
     technologies: ["Python", "Streamlit", "LangGraph", "LangSmith", "FAISS", "Docker", "Supabase", "OpenAI"],
-    live: true,
+    live: false,
     liveUrl: "https://interviewerai-ishmamdemo.streamlit.app/",
     githubUrl: "https://github.com/Ishmam97/Interviewer_AI",
     category: "AI Application"
   },
   {
     title: "UALR Graduate School Chatbot",
-    description: "An AI-powered chatbot for the UALR Graduate Admissions Office, enabling prospective students to query program info and admissions details via natural language.",
+    description: "An AI-powered chatbot for the UALR Graduate Admissions Office, enabling prospective students to query program info and admissions details via natural language. \n Login Credenials: test@test.com password: test1234, You will require a GEMINI API Key",
     imageUrl: "/assets/ualr_chatbot.png",
-    technologies: ["Python", "Streamlit", "LangChain", "FAISS", "RAG", "Docker", "Gemini", "Supabase", "LangSmith"],
+    technologies: ["Python", "React", "LangChain", "FAISS", "RAG", "Docker", "Gemini", "Supabase", "LangSmith"],
     live: true,
-    liveUrl: "https://ualrchatbot.streamlit.app/",
+    liveUrl: "https://ishmam97.github.io/grad-guide-chat/",
     githubUrl: "https://github.com/Ishmam97/ualr_chatbot",
     category: "AI Application"
   },
