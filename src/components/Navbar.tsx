@@ -11,7 +11,7 @@ const Navbar = () => {
     },
     {
       icon: Linkedin,
-      href: "https://www.linkedin.com/in/ishmam-solaiman-212b32186/",
+      href: "https://www.linkedin.com/in/iasolaiman",
       label: "LinkedIn"
     },
     {
