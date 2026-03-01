@@ -141,7 +141,7 @@ const Projects = () => {
 
   return (
     <TooltipProvider>
-      <section id="projects" className="py-20 px-4">
+      <section id="projects" className="py-20 px-0 md:px-4">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-4xl md:text-5xl font-bold text-center text-neon-yellow mb-16 animate-fade-in-up">
             My Projects
@@ -155,7 +155,7 @@ const Projects = () => {
                 data-index={index}
                 className={`section-container group ${
                   index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                } flex flex-col md:flex-row items-center gap-8 transition-all duration-700 w-[95%] md:w-full mx-auto ${
+                } flex flex-col md:flex-row items-center gap-8 transition-all duration-700 w-[98%] md:w-full mx-auto ${
                   visibleProjects.has(index) 
                     ? 'opacity-100 translate-y-0' 
                     : 'opacity-0 translate-y-10'

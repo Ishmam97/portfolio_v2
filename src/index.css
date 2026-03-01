@@ -63,7 +63,7 @@
 
 @layer components {
   .section-container {
-    @apply bg-cyber-dark border-2 border-neon-purple rounded-lg p-6 mt-10 transition-all duration-300;
+    @apply bg-cyber-dark border-2 border-neon-purple rounded-lg p-4 mt-10 transition-all duration-300 md:rounded-lg md:p-6;
   }
 
   .section-container:hover {

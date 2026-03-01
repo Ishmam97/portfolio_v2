@@ -72,14 +72,14 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-4'} py-8 md:py-12 relative min-h-[900px] lg:min-h-[85vh]`}
+      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-0 md:px-4'} py-8 md:py-12 relative min-h-[900px] lg:min-h-[85vh]`}
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
       <div className="section-container w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-12">
           {/* Profile Image - Always first on mobile, second on desktop */}
           <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center">
-            <div className={`relative mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
+            <div className={`relative mb-3 sm:mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
               <img 
                 src="/assets/IMG_5747.jpeg"
                 alt="Ishmam A. Solaiman" 

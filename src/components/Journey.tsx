@@ -128,7 +128,7 @@ const Journey = () => {
 	}, []);
 
 	return (
-		<section id="journey" className="py-20 px-4">
+		<section id="journey" className="py-20 px-0 md:px-4">
 			<div className="container mx-auto max-w-6xl">
 				<h2 className="text-4xl md:text-5xl font-bold text-center text-neon-yellow mb-16 animate-fade-in-up">
 					My Journey
@@ -173,7 +173,7 @@ const Journey = () => {
 
 							{/* Content - centered for mobile, alternating for desktop */}
 							<div
-								className={`relative z-20 w-[90%] mx-auto md:w-full md:mx-0 md:ml-12 lg:ml-0 lg:w-5/12 ${
+								className={`relative z-20 w-[98%] mx-auto md:w-full md:mx-0 md:ml-12 lg:ml-0 lg:w-5/12 ${
 									index % 2 === 0 ? 'lg:ml-auto lg:pl-8' : 'lg:pr-8'
 								}`}
 							>
