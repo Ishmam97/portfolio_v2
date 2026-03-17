@@ -32,23 +32,6 @@ const ChatbotInterface: React.FC<ChatbotInterfaceProps> = ({ onClose }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: "end" });
   }, [messages]);
 
-  const generateBotResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    if (lowerMessage.includes('experience') || lowerMessage.includes('work')) {
-      return "I have experience in full-stack development, data science, and AI applications. I've worked on various projects involving LLMs, multi-agent architectures, web applications, and natural language processing.";
-    } else if (lowerMessage.includes('project') || lowerMessage.includes('portfolio')) {
-      return "I've built several interesting projects including web applications, mobile apps, data science projects, and AI-powered solutions. You can check out the Projects section to see detailed examples of my work!";
-    } else if (lowerMessage.includes('skill') || lowerMessage.includes('technology')) {
-      return "My main skills include React, Node.js, Python, TypeScript, machine learning, natural language processing, and working with LLMs and AI architectures. I'm passionate about creating innovative solutions!";
-    } else if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('reach')) {
-      return "You can reach me through the contact form on this website, or connect with me on LinkedIn, GitHub, or send me an email at ishmam.a.solaiman@gmail.com. I'm always open to discussing new opportunities!";
-    } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      return "Hello! Great to meet you! I'm here to tell you all about Ishmam's background and experience. What specific area would you like to know about?";
-    } else {
-      return "That's an interesting question! I'd love to tell you more about Ishmam's work in software development, AI, and data science. Feel free to ask about his projects, skills, or experience!";
-    }
-  };
 
   // Accepts only FormEvent from form submit now
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,19 +47,41 @@ const ChatbotInterface: React.FC<ChatbotInterfaceProps> = ({ onClose }) => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
+    const botMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: '',
+      isBot: true,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, botMessage]);
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: generateBotResponse(inputText),
-        isBot: true,
-        timestamp: new Date()
-      };
+    try {
+      const res = await fetch('/functions/v1/chatbot-rag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: inputText })
+      });
 
-      setMessages(prev => [...prev, botResponse]);
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done && reader) {
+        const result = await reader.read();
+        done = result.done;
+        const chunk = decoder.decode(result.value || new Uint8Array(), { stream: !done });
+        if (chunk) {
+          setMessages(prev => prev.map(m => m.id === botMessage.id ? { ...m, text: m.text + chunk } : m));
+        }
+      }
+    } catch (err) {
+      console.error('chatbot error', err);
+      setMessages(prev => prev.map(m => m.id === botMessage.id ? { ...m, text: 'Sorry, something went wrong.' } : m));
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   // For Enter key, trigger form submit only if not typing.
