@@ -100,68 +100,67 @@ serve(async (req) => {
             .join("\n\n")
         : "No specific context available for this query.";
 
-    // Get OpenRouter API key
+    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     const openRouterApiKey = Deno.env.get("OPENROUTER_API_KEY");
-    if (!openRouterApiKey) {
-      throw new Error("OPENROUTER_API_KEY is not configured");
+
+    if (!geminiApiKey && !openRouterApiKey) {
+      throw new Error("No LLM provider configured (set GEMINI_API_KEY and/or OPENROUTER_API_KEY)");
     }
 
-    // Generate response using OpenRouter
-    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiApiKey) {
-      throw new Error("GEMINI_API_KEY is not configured");
-    }
+    const systemPrompt = `You are the AI digital twin of Ishmam A. Solaiman.
+Persona:
+  • You speak as Ishmam in first person ("I", "my", "me").
+  • Professional yet approachable; confident but humble.
+  • Passionate about AI, machine learning, and software development.
+  • Always eager to discuss technology and innovation.
+
+Portfolio Context:
+  – Use a software-engineering lens: highlight code, architectures, frameworks, and open-source contributions.
+  – Showcase key projects, technical challenges solved, and measurable impact.
+  – Emphasize clean code, testing, CI/CD, scalability, and collaboration.
+
+Traits:
+  – Professional and warm
+  – Passionate about AI/ML and software dev
+  – Confident about achievements, but modest
+  – Curious and forward-thinking
+
+Behavior Rules:
+  1. Respond as Ishmam, using first-person.
+  2. Draw strictly from the provided context; never invent facts.
+  3. Be specific about technologies, projects, and achievements.
+  4. If a question falls outside the context, politely steer back to known areas.
+  5. Keep tone conversational yet professional.
+  6. Highlight relevant experience and skills when applicable.
+
+Context:
+${context.trim()}`;
 
     let botMessage: string | null = null;
-    let geminiError: any = null;
+    let geminiError: unknown = null;
+    let source: "gemini" | "openrouter" | null = null;
 
     // Try Gemini API first
     try {
+      if (!geminiApiKey) {
+        throw new Error("GEMINI_API_KEY is not configured");
+      }
+
       const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-lite:generateContent?key=${geminiApiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemPrompt }],
+            },
             contents: [
               {
-                parts: [
-                  {
-                    text: `You are the AI digital twin of Ishmam A. Solaiman. 
-            Persona:
-              • You speak as Ishmam in first person (“I”, “my”, “me”).  
-              • Professional yet approachable; confident but humble.  
-              • Passionate about AI, machine learning, and software development.
-              • Always eager to discuss technology and innovation.
-
-            Portfolio Context:
-              – Use a software-engineering lens: highlight code, architectures, frameworks, and open-source contributions.  
-              – Showcase key projects, technical challenges solved, and measurable impact.  
-              – Emphasize clean code, testing, CI/CD, scalability, and collaboration.
-
-            Traits:
-              – Professional and warm  
-              – Passionate about AI/ML and software dev  
-              – Confident about achievements, but modest  
-              – Curious and forward-thinking  
-
-            Behavior Rules:
-              1. Respond as Ishmam, using first-person.  
-              2. Draw strictly from the provided context; never invent facts.  
-              3. Be specific about technologies, projects, and achievements.  
-              4. If a question falls outside the context, politely steer back to known areas.  
-              5. Keep tone conversational yet professional.  
-              6. Highlight relevant experience and skills when applicable.
-
-            Context:
-            {{context}}
-
-            User question:
-            {{question}}`,
-                  },
-                ],
+                role: "user",
+                parts: [{ text: message }],
               },
             ],
             generationConfig: {
@@ -194,8 +193,7 @@ serve(async (req) => {
 
       if (!geminiResponse.ok) {
         const errorData = await geminiResponse.text();
-        geminiError = new Error(`Gemini API error: ${geminiResponse.status} - ${errorData}`);
-        throw geminiError;
+        throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorData}`);
       }
 
       const aiResponse = await geminiResponse.json();
@@ -203,12 +201,16 @@ serve(async (req) => {
         !aiResponse.candidates ||
         !aiResponse.candidates[0]?.content?.parts?.[0]?.text
       ) {
-        geminiError = new Error("Invalid response from Gemini API");
-        throw geminiError;
+        throw new Error("Invalid response from Gemini API");
       }
       botMessage = aiResponse.candidates[0].content.parts[0].text;
+      source = "gemini";
     } catch (err) {
+      geminiError = err;
       console.error("Gemini API failed, falling back to OpenRouter:", err);
+      if (!openRouterApiKey) {
+        throw new Error(`Gemini failed and OPENROUTER_API_KEY is not configured: ${err}`);
+      }
       // Fallback to OpenRouter
       const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
@@ -217,21 +219,9 @@ serve(async (req) => {
           Authorization: `Bearer ${openRouterApiKey}`,
         },
         body: JSON.stringify({
-          model: "deepseek/deepseek-r1:free",
+          model: "z-ai/glm-4.5-air:free",
           messages: [
-            {
-              role: "system",
-              content: `
-        You are the AI digital twin of Ishmam A. Solaiman, a seasoned software engineer and AI/ML specialist. Your tone is professional yet approachable—warm, enthusiastic, and curious. Always speak in first person as “I” (Ishmam).  
-        • Base every response strictly on the provided context; do not invent or guess facts.  
-        • Cite specific technologies, frameworks, methodologies, projects, and accomplishments when relevant.  
-        • If a question falls outside the supplied context, gently acknowledge and steer back: 
-          “That’s beyond my current scope—let me tell you about…”  
-
-        Context:
-        ${context.trim()}
-              `.trim()
-            },
+            { role: "system", content: systemPrompt },
             { role: "user", content: message }
           ],
           max_tokens: 500,
@@ -240,15 +230,18 @@ serve(async (req) => {
       });
       if (!openRouterResponse.ok) {
         const errorData = await openRouterResponse.text();
-        throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData}`);
+        throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData} | gemini: ${(err as Error)?.message ?? err}`);
       }
       const openRouterData = await openRouterResponse.json();
       botMessage = openRouterData.choices?.[0]?.message?.content || "I'm sorry, I couldn't generate a response at this time.";
+      source = "openrouter";
     }
 
     return new Response(
       JSON.stringify({
         response: botMessage,
+        source,
+        geminiError: geminiError ? (geminiError as Error)?.message ?? String(geminiError) : null,
         relevantSections: relevantSections.map((s) => ({
           title: s.title,
           section_type: s.section_type,
