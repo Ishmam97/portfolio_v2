@@ -167,7 +167,10 @@ ${context.trim()}`;
               temperature: 0.7,
               topK: 40,
               topP: 0.95,
-              maxOutputTokens: 500,
+              maxOutputTokens: 2048,
+              thinkingConfig: {
+                thinkingBudget: 0,
+              },
             },
             safetySettings: [
               {
@@ -197,13 +200,14 @@ ${context.trim()}`;
       }
 
       const aiResponse = await geminiResponse.json();
-      if (
-        !aiResponse.candidates ||
-        !aiResponse.candidates[0]?.content?.parts?.[0]?.text
-      ) {
-        throw new Error("Invalid response from Gemini API");
+      const candidate = aiResponse.candidates?.[0];
+      const text = candidate?.content?.parts?.[0]?.text;
+      if (!text) {
+        throw new Error(
+          `Invalid response from Gemini API (finishReason=${candidate?.finishReason ?? "none"}, raw=${JSON.stringify(aiResponse).slice(0, 500)})`
+        );
       }
-      botMessage = aiResponse.candidates[0].content.parts[0].text;
+      botMessage = text;
       source = "gemini";
     } catch (err) {
       geminiError = err;
