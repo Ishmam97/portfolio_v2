@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { ArrowRight, Brain, Sparkles, Zap } from 'lucide-react';
 import AdvancedChatbotInterface from './AdvancedChatbotInterface';
 
 const roles = [
-  "Software Engineer",
-  "Tech Enthusiast", 
-  "Problem Solver",
-  "Data Scientist"
+  'Founding CTO',
+  'Agentic AI Engineer',
+  'Full-Stack SWE',
+  'RAG Systems Builder',
 ];
 
 const Hero = () => {
@@ -18,7 +19,7 @@ const Hero = () => {
   useEffect(() => {
     if (showChatbot) return; // Don't run typing animation when chatbot is active
     
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     const currentRoleText = roles[currentRole];
     
     if (isTyping) {
@@ -51,17 +52,17 @@ const Hero = () => {
 
   const specialties = [
     {
-      emoji: "🤖",
-      text: "Applications of LLMS & Multi Agent Architecture"
+      icon: Brain,
+      text: 'Production-grade RAG and per-domain AI agents with grounded citations',
     },
     {
-      emoji: "💻📱",
-      text: "Full stack web and mobile application development"
+      icon: Zap,
+      text: 'Cross-platform web and mobile products with reliability-first engineering',
     },
     {
-      emoji: "📊🩻",
-      text: "Data Science & Natural Language Processing"
-    }
+      icon: Sparkles,
+      text: 'Model evaluation and orchestration across OpenAI, Gemini, and open-source LLMs',
+    },
   ];
 
   const handleChatbotToggle = (e?: React.MouseEvent) => {
@@ -105,7 +106,7 @@ const Hero = () => {
           </div>
 
           {/* Text/Chat Section - Always second on mobile, first on desktop */}
-          {!showChatbot ? (    
+          {!showChatbot ? (
           <div
             className="flex-1 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center px-4 lg:px-0"
             style={{
@@ -115,30 +116,51 @@ const Hero = () => {
               width: '100%'
             }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 lg:mb-8 animate-fade-in-up">
-              <span className="text-neon-yellow">Hi i am Ishmam.</span>
-            </h1>
-            
-            <div style={{ width: '100%', height: '100%' }}>
+            <p className="inline-flex items-center gap-2 rounded-full border border-neon-yellow/60 bg-neon-yellow/20 px-4 py-1.5 text-xs sm:text-sm font-semibold text-neon-yellow mb-5 animate-fade-in-up">
+              <span className="h-2 w-2 rounded-full bg-neon-yellow animate-pulse" />
+              Agentic SWE • AI Product Builder
+            </p>
 
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-8 lg:mb-10 h-10 sm:h-12 flex items-center justify-center lg:justify-start">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 lg:mb-6 animate-fade-in-up leading-tight">
+              <span className="text-neon-yellow">Ishmam A. Solaiman</span>
+            </h1>
+
+            <div style={{ width: '100%', height: '100%' }}>
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-6 lg:mb-8 h-10 sm:h-12 flex items-center justify-center lg:justify-start">
                   <span className="text-neon-green font-semibold">
                     {displayText}
                   </span>
                   <span className="animate-pulse text-neon-yellow ml-1">|</span>
                 </div>
 
-                <p className="text-neon-pink text-base sm:text-lg md:text-xl mb-8 lg:mb-10 max-w-2xl animate-fade-in-up delay-300">
-                  Passionate self taught Web Application Developer, Data Scientist, Ai Application Engineer focusing on topics such as:
+                <p className="text-neon-pink text-base sm:text-lg md:text-xl mb-6 lg:mb-8 max-w-2xl animate-fade-in-up delay-300">
+                  I build high-performance AI applications from prototype to production, combining strong product intuition with rigorous software engineering.
                 </p>
 
-                <div className="space-y-4 lg:space-y-6 animate-fade-in-up delay-500">
+                <div className="space-y-4 lg:space-y-5 animate-fade-in-up delay-500">
                   {specialties.map((specialty, index) => (
-                    <div key={index} className="flex items-start lg:items-center justify-center lg:justify-start text-neon-pink text-sm sm:text-base lg:text-lg">
-                      <span className="text-xl sm:text-2xl mr-3 lg:mr-4 flex-shrink-0">{specialty.emoji}</span>
+                    <div key={index} className="flex items-start lg:items-center justify-center lg:justify-start text-neon-pink text-sm sm:text-base lg:text-lg rounded-lg bg-cyber-dark/70 border border-neon-purple/40 p-3">
+                      <specialty.icon className="h-5 w-5 text-neon-green mr-3 lg:mr-4 flex-shrink-0 mt-0.5 lg:mt-0" />
                       <span className="text-left">{specialty.text}</span>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-7 flex flex-col sm:flex-row items-center gap-3 lg:gap-4">
+                  <a href="#projects" className="w-full sm:w-auto">
+                    <Button className="w-full sm:w-auto bg-neon-green text-cyber-dark hover:bg-neon-green/85 font-semibold px-6 py-3">
+                      View Projects
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                  <a href="#contact" className="w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto border-neon-purple text-neon-purple hover:bg-neon-purple hover:text-cyber-dark font-semibold px-6 py-3"
+                    >
+                      Let&apos;s Build Together
+                    </Button>
+                  </a>
                 </div>
             </div>
           </div>
