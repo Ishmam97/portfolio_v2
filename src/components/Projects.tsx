@@ -194,18 +194,18 @@ const Projects = () => {
       <section id="projects" className="relative py-24 px-0 md:px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <p className="inline-flex items-center gap-2 rounded-full border border-neon-purple/60 bg-neon-purple/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-neon-purple">
+            <p className="mx-auto mb-4 flex w-fit items-center gap-2 rounded-full border border-neon-yellow/70 bg-cyber-darker/85 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-neon-yellow shadow-[0_0_12px_rgba(223,255,61,0.25)]">
               <Sparkles size={12} />
               Portfolio
             </p>
-            <h2 className="mt-5 text-4xl md:text-5xl font-bold text-neon-yellow">Selected Projects</h2>
-            <p className="mx-auto mt-5 max-w-3xl text-base md:text-lg text-neon-green/85">
+            <h2 className="inline-block rounded-lg bg-cyber-dark/65 px-2.5 py-1.5 text-4xl md:text-5xl font-bold text-neon-yellow">Selected Projects</h2>
+            <p className="mx-auto mt-5 max-w-3xl rounded-xl bg-cyber-dark/90 px-4 py-3 text-base md:text-lg text-neon-green">
               Production work across AI systems, full-stack products, and mobile applications.
             </p>
           </div>
 
           {featuredProject && (
-            <article className="group mb-10 overflow-hidden rounded-2xl border border-neon-purple/60 bg-cyber-darker/75 shadow-[0_18px_50px_rgba(0,0,0,0.45)]">
+            <article className="group mb-10 overflow-hidden rounded-2xl border border-neon-purple/60 bg-cyber-darker/90 shadow-[0_18px_50px_rgba(0,0,0,0.45)]">
               <div className="grid gap-0 lg:grid-cols-[1.2fr_1fr]">
                 <div className="relative">
                   <img
@@ -251,7 +251,7 @@ const Projects = () => {
                   projectRefs.current[index] = el;
                 }}
                 data-index={index}
-                className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-neon-purple/50 bg-cyber-darker/75 transition-all duration-500 hover:border-neon-green/70 hover:shadow-[0_16px_34px_rgba(0,255,156,0.08)] ${
+                className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-neon-purple/50 bg-cyber-darker/90 transition-all duration-500 hover:border-neon-green/70 hover:shadow-[0_16px_34px_rgba(0,255,156,0.08)] ${
                   visibleProjects.has(index) ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
                 style={{ transitionDelay: `${index * 70}ms` }}
