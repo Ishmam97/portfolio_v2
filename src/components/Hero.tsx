@@ -73,20 +73,20 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-0 md:px-4'} py-8 md:py-12 relative min-h-[900px] lg:min-h-[85vh]`}
+      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-0 md:px-4'} py-8 md:py-12 relative min-h-[980px] lg:min-h-[92vh]`}
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
-      <div className="section-container w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-12">
+      <div className={`section-container w-full ${showChatbot ? 'max-w-[92rem]' : 'max-w-6xl'} ${showChatbot ? 'min-h-[720px]' : 'min-h-[760px]'}`}>
+        <div className={`flex flex-col lg:flex-row items-center justify-between gap-2 ${showChatbot ? 'lg:gap-6' : 'lg:gap-12'} min-h-[680px]`}>
           {/* Profile Image - Always first on mobile, second on desktop */}
-          <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center">
+          <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center self-center">
             <div className={`relative mb-3 sm:mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
               <img 
                 src="/assets/IMG_5747.jpeg"
                 alt="Ishmam A. Solaiman" 
                 className={`rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300 ${
                   showChatbot 
-                    ? 'w-20 h-20 sm:w-24 sm:h-24 lg:w-80 lg:h-80' 
+                    ? 'w-16 h-16 sm:w-20 sm:h-20 lg:w-44 lg:h-44' 
                     : 'w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80'
                 }`}
               />
@@ -165,7 +165,7 @@ const Hero = () => {
             </div>
           </div>
             ) : (
-              <div className="flex-1 order-2 lg:order-1 w-full h-full flex flex-col justify-center items-center min-h-[512px] max-h-[600px] px-4 lg:px-0">
+              <div className="flex-1 order-2 lg:order-1 w-full h-full flex flex-col justify-center items-center min-h-[512px] max-h-[640px] px-0 lg:px-0 lg:basis-[82%]">
                 <AdvancedChatbotInterface onClose={() => handleChatbotToggle()} />
               </div>
             )}
