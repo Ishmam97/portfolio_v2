@@ -73,11 +73,11 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-0 md:px-4'} py-8 md:py-12 relative min-h-[980px] lg:min-h-[92vh]`}
+      className={`flex items-center justify-center ${showChatbot ? 'px-0' : 'px-0 md:px-4'} py-8 md:py-12 relative min-h-[1080px] md:min-h-[980px] lg:min-h-[92vh]`}
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
-      <div className={`section-container w-full ${showChatbot ? 'max-w-[92rem]' : 'max-w-6xl'} ${showChatbot ? 'min-h-[720px]' : 'min-h-[760px]'}`}>
-        <div className={`flex flex-col lg:flex-row items-center justify-between gap-2 ${showChatbot ? 'lg:gap-6' : 'lg:gap-12'} min-h-[680px]`}>
+      <div className={`section-container w-full ${showChatbot ? 'max-w-[92rem] min-h-[760px] md:min-h-[700px]' : 'max-w-6xl min-h-[820px] md:min-h-[760px]'}`}>
+        <div className={`flex flex-col lg:flex-row items-center justify-between gap-2 ${showChatbot ? 'lg:gap-6' : 'lg:gap-12'} min-h-[720px] md:min-h-[640px]`}>
           {/* Profile Image - Always first on mobile, second on desktop */}
           <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center self-center">
             <div className={`relative mb-3 sm:mb-6 transition-all duration-300 ${showChatbot ? 'mb-4' : ''}`}>
@@ -111,8 +111,8 @@ const Hero = () => {
             className="flex-1 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center px-4 lg:px-0"
             style={{
               minHeight: 512,
-              maxHeight: 600,
-              overflow: "hidden", // Prevents layout shift when toggling chat
+              maxHeight: 'none',
+              overflow: "visible",
               width: '100%'
             }}
           >
@@ -165,7 +165,7 @@ const Hero = () => {
             </div>
           </div>
             ) : (
-              <div className="flex-1 order-2 lg:order-1 w-full h-full flex flex-col justify-center items-center min-h-[512px] max-h-[640px] px-0 lg:px-0 lg:basis-[82%]">
+              <div className="flex-1 order-2 lg:order-1 w-full h-full flex flex-col justify-center items-center min-h-[512px] px-0 lg:px-0 lg:basis-[82%]">
                 <AdvancedChatbotInterface onClose={() => handleChatbotToggle()} />
               </div>
             )}
