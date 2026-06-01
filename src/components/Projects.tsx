@@ -27,6 +27,17 @@ import {
 
 const projectsData = [
   {
+    title: "Agentic Scaffold (Forge)",
+    description: "A Claude Code-native scaffold for full-lifecycle software engineering with specialist agents, typed artifacts, parallel reviews, and a memory loop that compounds.",
+    imageUrl: "/assets/preview_img.png",
+    technologies: ["Claude Code", "Multi-Agent", "TypeScript", "Prompt Engineering", "Workflow Design"],
+    live: true,
+    liveUrl: "/forge",
+    liveLabel: "View Forge",
+    githubUrl: "https://github.com/Ishmam97/Forge",
+    category: "AI Engineering"
+  },
+  {
     title: "Interviewer AI",
     description: "A mock technical interview platform using Retrieval-Augmented Generation. Upload your resume and job description to simulate personalized interview sessions.",
     imageUrl: "/assets/interviewer.png",
@@ -202,12 +213,12 @@ const Projects = () => {
                     {project.live && (
                       <a
                         href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target={project.liveUrl?.startsWith('/') ? undefined : "_blank"}
+                        rel={project.liveUrl?.startsWith('/') ? undefined : "noopener noreferrer"}
                         className="inline-flex items-center px-6 py-3 bg-neon-yellow text-cyber-dark font-semibold rounded-full hover:bg-neon-green transition-all duration-300 hover:scale-105"
                       >
                         <ExternalLink size={20} className="mr-2" />
-                        View Live
+                        {project.liveLabel || "View Live"}
                       </a>
                     )}
                     {project.githubUrl && (

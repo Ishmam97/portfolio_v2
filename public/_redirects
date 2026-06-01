@@ -1,1 +1,3 @@
-/*    /index.html   200
+/forge   /forge/index.html   200
+/forge/* /forge/:splat       200
+/*       /index.html         200

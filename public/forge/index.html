@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forge ~ an agentic SWE scaffold</title>
+<meta name="description" content="A Claude Code-native scaffold that turns AI coding into a disciplined, full-lifecycle engineering team." />
+
+<!-- Canonical -->
+<link rel="canonical" href="https://ishmamsolaiman.com/forge" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Ishmam Solaiman" />
+<meta property="og:url" content="https://ishmamsolaiman.com/forge" />
+<meta property="og:title" content="Forge ~ an agentic SWE scaffold" />
+<meta property="og:description" content="A Claude Code-native scaffold that turns AI coding into a disciplined, full-lifecycle engineering team — specialist agents, typed artifacts, parallel reviews, and a memory that compounds." />
+<!-- TODO: replace with a real 1200×630 preview image (absolute URL). Placeholder below. -->
+<meta property="og:image" content="https://ishmamsolaiman.com/forge/preview_img.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Forge ~ an agentic SWE scaffold for full-lifecycle software engineering" />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Forge ~ an agentic SWE scaffold" />
+<meta name="twitter:description" content="A Claude Code-native scaffold that turns AI coding into a disciplined, full-lifecycle engineering team." />
+<meta name="twitter:image" content="https://ishmamsolaiman.com/forge/preview_img.png" />
+<meta name="twitter:image:alt" content="Forge ~ an agentic SWE scaffold for full-lifecycle software engineering" />
+
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#05060a; --bg2:#090b13; --panel:rgba(255,255,255,.055); --panel2:rgba(255,255,255,.085);
+    --ink:#f6f7fb; --soft:#c5ccdc; --muted:#8e98ad; --faint:#576071; --line:rgba(255,255,255,.12);
+    --blue:#75a7ff; --violet:#a479ff; --cyan:#41e6d4; --pink:#ff6da8; --gold:#ffd55e; --lime:#77e8a8;
+    --grad:linear-gradient(135deg,var(--blue),var(--violet) 48%,var(--cyan));
+    --danger:linear-gradient(135deg,#ff6da8,#ffd55e);
+    --max:1180px; --radius:28px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:radial-gradient(circle at 20% -10%,rgba(117,167,255,.22),transparent 33%),radial-gradient(circle at 88% 12%,rgba(164,121,255,.24),transparent 32%),radial-gradient(circle at 50% 92%,rgba(65,230,212,.13),transparent 34%),var(--bg);
+    color:var(--ink);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom,#000,transparent 84%)}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(115deg,transparent 0 42%,rgba(255,255,255,.06) 48%,transparent 56%);animation:sheen 11s ease-in-out infinite;opacity:.5}
+  @keyframes sheen{0%,45%{transform:translateX(-70%)}100%{transform:translateX(80%)}}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:20;box-shadow:0 0 24px rgba(65,230,212,.8)}
+  .wrap{width:min(var(--max),calc(100% - 40px));margin:auto;position:relative;z-index:1}
+  section{padding:110px 0;position:relative}
+  h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.045em} h1{font-size:clamp(58px,10.5vw,138px);font-weight:900} h2{font-size:clamp(36px,6.4vw,76px);font-weight:900} h3{font-size:20px;letter-spacing:-.02em;line-height:1.12} p{margin:0;color:var(--soft)}
+  a{color:inherit;text-decoration:none} code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#dbe6ff;background:rgba(255,255,255,.07);border:1px solid var(--line);padding:2px 7px;border-radius:999px}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}.hot{background:var(--danger);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{display:inline-flex;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.055);backdrop-filter:blur(18px);color:var(--cyan);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.14em}.eyebrow::before{content:"";width:8px;height:8px;border-radius:99px;background:var(--grad);box-shadow:0 0 20px var(--cyan)}
+  .lead{font-size:clamp(17px,2vw,22px);max-width:760px;color:var(--soft)}
+  .glass{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));backdrop-filter:blur(24px);box-shadow:0 24px 80px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.1);border-radius:var(--radius)}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .72s cubic-bezier(.2,.8,.2,1),transform .72s cubic-bezier(.2,.8,.2,1)}.reveal.in{opacity:1;transform:none}.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+  /* hero */
+  .hero{min-height:100svh;display:grid;align-items:center;padding:90px 0 70px;overflow:hidden}.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:44px;align-items:center}.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;font-weight:900;font-size:20px}.mark{width:44px;height:44px;filter:drop-shadow(0 0 22px rgba(65,230,212,.38))}.hero h1{max-width:850px}.hero .lead{margin-top:24px}.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;align-items:center}.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 18px;border-radius:16px;border:1px solid var(--line);font-weight:850;font-size:14px;background:rgba(255,255,255,.055)}.btn.primary{background:var(--grad);color:#05060a;border:0;box-shadow:0 18px 42px rgba(117,167,255,.25)}.btn:hover{transform:translateY(-2px);transition:.2s ease}.terminal{padding:22px;border-radius:24px;border:1px solid var(--line);background:rgba(2,3,8,.72);box-shadow:0 30px 80px rgba(0,0,0,.38);overflow:hidden}.terminal-top{display:flex;gap:7px;margin-bottom:18px}.terminal-top i{width:10px;height:10px;border-radius:50%;background:var(--faint)}.term-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#dbe6ff;font-size:13px;border-bottom:1px solid rgba(255,255,255,.07);padding:11px 0;display:flex;gap:10px}.term-line span:first-child{color:var(--cyan)}.floating-card{margin-top:16px;padding:20px;border-radius:22px;background:linear-gradient(135deg,rgba(117,167,255,.16),rgba(65,230,212,.1));border:1px solid var(--line)}.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.mini{padding:14px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.mini b{display:block;font-size:26px;line-height:1;color:var(--ink)}.mini span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+  /* sections */
+  .section-head{display:grid;gap:18px;margin-bottom:42px}.split-head{grid-template-columns:.9fr 1.1fr;align-items:end}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{padding:24px;border-radius:24px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.038));position:relative;overflow:hidden}.card::before{content:"";position:absolute;inset:auto -30% -40% auto;width:180px;height:180px;border-radius:50%;background:var(--grad);filter:blur(55px);opacity:.18}.card .num{font-size:12px;color:var(--cyan);letter-spacing:.16em;font-weight:900;margin-bottom:36px}.card p{margin-top:10px;color:var(--muted)}
+  .pain-grid{grid-template-columns:repeat(6,1fr)}.pain{grid-column:span 2}.pain:nth-child(1),.pain:nth-child(2){grid-column:span 3}.pain .icon{width:42px;height:42px;border-radius:14px;background:rgba(255,109,168,.13);color:var(--pink);display:grid;place-items:center;margin-bottom:20px}
+
+  /* viz */
+  .viz-shell{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:center}.viz-copy{padding:34px}.big-stat{font-size:clamp(56px,8vw,96px);line-height:.9;font-weight:950;letter-spacing:-.06em;margin:18px 0 14px}.legend{display:grid;gap:12px;margin-top:24px}.leg{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);font-size:14px;color:var(--soft)}.sw{width:13px;height:13px;border-radius:4px;display:inline-block;margin-right:10px}.sw.gray{background:#d4d6d4}.sw.green{background:#59c895}.sw.yellow{background:#ffd62e}.sw.red{background:#f0445b}.leg b{color:var(--ink)}
+  .dotviz{padding:24px;border-radius:32px;background:linear-gradient(180deg,#fbfaf4,#e9efe9);color:#12151c;box-shadow:0 28px 90px rgba(0,0,0,.38);transform:rotate(-.35deg)}.dotviz h3{font-family:Georgia,serif;text-align:center;font-size:clamp(22px,3.1vw,44px);letter-spacing:-.04em;color:#111;margin:0}.dotviz .subt{text-align:center;color:#7b8085;font:600 14px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;margin:8px 0 20px}.matrix{display:grid;grid-template-columns:repeat(50,1fr);gap:2px;aspect-ratio:1/1}.dot{border-radius:2px;background:#d6d8d5;opacity:0;transform:scale(.35);animation:dotIn .45s cubic-bezier(.2,.9,.2,1) forwards;animation-delay:calc(var(--i) * .0009s)}.dot.free{background:#55c78f}.dot.paid{background:#f1cc28}.dot.code{background:#ee4156}.dot:hover{transform:scale(1.7);z-index:3;outline:1px solid rgba(0,0,0,.28)}@keyframes dotIn{to{opacity:1;transform:scale(1)}}.viz-note{color:#6f747a;font-size:12px;margin-top:12px;text-align:center}.viz-note b{color:#25282f}
+
+  /* artifact flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.flow-card{padding:22px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.055);position:relative}.flow-card:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:50%;translate:0 -50%;color:var(--cyan);font-weight:900}.flow-card small{color:var(--cyan);font-weight:900;text-transform:uppercase;letter-spacing:.12em}.flow-card code{display:inline-block;margin-top:14px}.rail{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:24px}.agent{padding:18px;border-radius:20px;background:rgba(255,255,255,.045);border:1px solid var(--line)}.agent strong{display:block;margin-bottom:8px}.agent span{color:var(--muted);font-size:13px}
+
+  .timeline{display:grid;gap:16px}.time{display:grid;grid-template-columns:88px 1fr;gap:18px;align-items:start}.time .badge{height:46px;border-radius:999px;display:grid;place-items:center;background:rgba(65,230,212,.12);border:1px solid rgba(65,230,212,.25);color:var(--cyan);font-weight:900}.time .body{padding:20px}.body p{margin-top:7px;color:var(--muted)}
+  .closing{text-align:center;padding-bottom:80px}.closing .lead{margin:22px auto 0}.footer{padding:38px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}.footer .links{display:flex;gap:20px;flex-wrap:wrap}.footer .links a{color:var(--soft);font-weight:600;transition:color .2s ease}.footer .links a:hover{color:var(--cyan)}
+
+  /* figures (architect→editor split + flywheel loop) */
+  .fig{padding:16px 18px;margin-top:34px}.fig svg{display:block;width:100%;height:auto}
+  #loop .timeline{margin-top:48px}
+  #loop .node circle{transition:filter .28s ease,transform .28s ease;transform-box:fill-box;transform-origin:center}
+  #loop .node:hover circle{transform:scale(1.07)}
+  #loop .node.n-build:hover circle{filter:drop-shadow(0 0 16px rgba(117,167,255,.9))}
+  #loop .node.n-learn:hover circle{filter:drop-shadow(0 0 16px rgba(164,121,255,.9))}
+  #loop .node.n-store:hover circle{filter:drop-shadow(0 0 16px rgba(65,230,212,.9))}
+  #loop .node.n-recall:hover circle{filter:drop-shadow(0 0 16px rgba(255,213,94,.9))}
+  #loop .node.n-better:hover circle{filter:drop-shadow(0 0 16px rgba(164,121,255,.85))}
+  /* obsidian memory block */
+  .mem{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;margin-top:40px}
+  .mem-shot{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#05060a;box-shadow:0 30px 80px rgba(0,0,0,.45);margin:0;position:relative}
+  .mem-shot::after{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+  .mem-shot img{display:block;width:100%;height:auto}
+  .mem h3{font-size:clamp(22px,3vw,34px);margin:16px 0 10px;letter-spacing:-.03em;line-height:1.08}
+  .mem-points{display:grid;gap:12px;margin:22px 0 0;padding:0}
+  .mem-points li{list-style:none;padding:13px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045);color:var(--soft);font-size:14px}
+  .mem-points li b{color:var(--ink)}
+  @media(max-width:880px){.mem{grid-template-columns:1fr}}
+  /* gate + advantage cards */
+  .card .ic{width:34px;height:34px;margin-bottom:16px;color:var(--cyan)}.card.hl{border-color:rgba(117,167,255,.42)}.card h3 .grad{font-weight:900}
+  /* dot matrix — the rare ~500k scaffold dot (distinct color, slow spin + pulsing glow) */
+  .sw.scaffold{background:linear-gradient(135deg,var(--violet),var(--pink))}
+  .dot.scaffold{background:linear-gradient(135deg,var(--violet),var(--pink));border-radius:3px;transform-origin:center;z-index:5;animation:dotIn .45s cubic-bezier(.2,.9,.2,1) .5s forwards,scaffoldSpin 7s linear .95s infinite,scaffoldPulse 2.4s ease-in-out .95s infinite}
+  @keyframes scaffoldSpin{to{transform:rotate(360deg)}}
+  @keyframes scaffoldPulse{0%,100%{box-shadow:0 0 5px rgba(164,121,255,.5)}50%{box-shadow:0 0 16px rgba(255,109,168,.95),0 0 24px rgba(164,121,255,.7)}}
+
+  @media(max-width:980px){.hero-grid,.viz-shell,.split-head{grid-template-columns:1fr}.cards,.pain-grid{grid-template-columns:1fr 1fr}.pain,.pain:nth-child(1),.pain:nth-child(2){grid-column:span 1}.flow{grid-template-columns:1fr 1fr}.rail{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:640px){.wrap{width:min(var(--max),calc(100% - 28px))}section{padding:78px 0}.cards,.pain-grid,.flow,.rail{grid-template-columns:1fr}.flow-card::after{display:none}.metric-row{grid-template-columns:1fr}.dotviz{padding:14px;border-radius:22px}.matrix{gap:1.4px}.time{grid-template-columns:1fr}.hero{padding-top:72px}h1{font-size:clamp(48px,18vw,74px)}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}.dot{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="brand reveal">
+        <span class="mark" aria-hidden="true" style="display:grid;place-items:center;font-size:28px">⚒</span>
+        <span>Forge <span class="grad">~ an agentic SWE Scaffold</span></span>
+      </div>
+      <span class="eyebrow reveal d1">Claude Code native scaffold</span>
+      <h1 class="reveal d1">Stop prompting.<br><span class="grad">Run an AI engineering org.</span></h1>
+      <p class="lead reveal d2">Specialist agents, durable artifacts, memory, and hard quality gates — packaged as a drop-in operating system for serious AI-assisted software work.</p>
+      <div class="cta reveal d3">
+        <a href="#viz" class="btn primary">See the market gap <span>↓</span></a>
+        <a href="#system" class="btn">Explore the system</a>
+        <code>/greenfield:kickoff "your idea"</code>
+      </div>
+    </div>
+    <aside class="reveal d2">
+      <div class="terminal">
+        <div class="terminal-top"><i></i><i></i><i></i></div>
+        <div class="term-line"><span>01</span><span>analyst → brief.md</span></div>
+        <div class="term-line"><span>02</span><span>pm → prd.md</span></div>
+        <div class="term-line"><span>03</span><span>architect → architecture.md + ADRs</span></div>
+        <div class="term-line"><span>04</span><span>implementer → diff + tests</span></div>
+        <div class="term-line"><span>05</span><span>reviewers → security · perf · code</span></div>
+      </div>
+      <div class="floating-card glass">
+        <strong>Engineering discipline, encoded once.</strong>
+        <p>Every session inherits the same playbook: plan, build, verify, learn, recall.</p>
+        <div class="metric-row">
+          <div class="mini"><b data-count="20">0</b><span>agents</span></div>
+          <div class="mini"><b data-count="22">0</b><span>commands</span></div>
+          <div class="mini"><b data-count="15">0</b><span>templates</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">The problem</span><h2 style="margin-top:18px">Raw AI coding creates <span class="hot">speed with entropy.</span></h2></div>
+      <p class="lead">Chat is a terrible substrate for engineering memory. The transcript gets noisy, decisions disappear, reviews turn vibes-based, and each new session pays the same rediscovery tax.</p>
+    </div>
+    <div class="cards pain-grid">
+      <article class="card pain reveal d1"><div class="icon">⚠</div><h3>Context rot</h3><p>Logs, dead ends, and stale instructions crowd the window right when the task gets hardest.</p></article>
+      <article class="card pain reveal d1"><div class="icon">⌘</div><h3>Decisions trapped in chat</h3><p>The “why” lives in a scrollback that vanishes when you clear the context.</p></article>
+      <article class="card pain reveal d2"><div class="icon">↻</div><h3>Rediscovery tax</h3><p>Every session re-learns how the repo works instead of building on what was already mapped.</p></article>
+      <article class="card pain reveal d2"><div class="icon">?</div><h3>Reviews by vibes</h3><p>Confident, plausible, wrong findings slip through when evidence is not required.</p></article>
+      <article class="card pain reveal d3"><div class="icon">⧉</div><h3>One-size process</h3><p>A typo and a migration should not receive the same ceremony.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="viz">
+  <div class="wrap viz-shell">
+    <div class="viz-copy glass reveal">
+      <span class="eyebrow">The market gap</span>
+      <div class="big-stat grad">78%</div>
+      <h2 style="font-size:clamp(34px,4.8vw,62px)">Most of the world still hasn’t used AI.</h2>
+      <p class="lead" style="margin-top:18px">The original dot matrix is rebuilt directly in the page as an animated, responsive visualization. Each square represents roughly 3.3 million people; the paid, coding-tool, and lone agent-scaffolding dot show how early this market still is.</p>
+      <div class="legend" aria-label="AI adoption legend">
+        <div class="leg"><span><i class="sw gray"></i>Never used AI</span><b>~6.47B · 78.0%</b></div>
+        <div class="leg"><span><i class="sw green"></i>Free chatbot user</span><b>~1.75B · 21.1%</b></div>
+        <div class="leg"><span><i class="sw yellow"></i>Pays $20/mo for AI</span><b>~60M · 0.72%</b></div>
+        <div class="leg"><span><i class="sw red"></i>Uses tools like Claude Code, Codex, OpenCode</span><b>~10M · 0.12%</b></div>
+        <div class="leg"><span><i class="sw scaffold"></i>Agent scaffolding &amp; managed workflows</span><b>only ~500k</b></div>
+      </div>
+    </div>
+    <figure class="dotviz reveal d2" aria-label="Dot matrix showing AI adoption across an estimated world population of 8.29 billion people">
+      <h3>Each dot is ~3.3 million people</h3>
+      <div class="subt">2,500 dots = ~8.29B people · May 2026 estimate</div>
+      <div class="matrix" id="matrix"></div>
+      <figcaption class="viz-note"><b>Animated recreation:</b> gray = never used AI, green = free users, yellow = paid users, red = coding-tool users — and the single violet dot = the ~500k on agent scaffolding.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="system">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">The system</span><h2 style="margin-top:18px">Typed artifacts beat chat.</h2></div>
+      <p class="lead">The scaffold turns intent into durable files — PRDs, architecture notes, stories, ADRs, learnings — so agents can hand work off like a real engineering team and survive context resets.</p>
+    </div>
+    <div class="flow">
+      <article class="flow-card reveal d1"><small>Discover</small><h3>Brief → PRD</h3><p>Analyst and PM agents turn fuzzy ideas into crisp requirements.</p><code>docs/prd/*.md</code></article>
+      <article class="flow-card reveal d2"><small>Design</small><h3>Architecture</h3><p>System shape, tradeoffs, ADRs, and risk are captured before edits.</p><code>docs/architecture/*.md</code></article>
+      <article class="flow-card reveal d3"><small>Build</small><h3>Stories + tests</h3><p>The implementer applies targeted diffs and flips acceptance criteria.</p><code>docs/stories/*.md</code></article>
+      <article class="flow-card reveal d4"><small>Verify</small><h3>Review + ship</h3><p>Code, security, and performance reviews aggregate by severity.</p><code>/review → /ship</code></article>
+    </div>
+    <div class="rail reveal d2">
+      <div class="agent"><strong>analyst</strong><span>clarifies vague ideas</span></div><div class="agent"><strong>architect</strong><span>designs systems</span></div><div class="agent"><strong>implementer</strong><span>edits cheaply</span></div><div class="agent"><strong>test-author</strong><span>writes tests that bite</span></div><div class="agent"><strong>security-auditor</strong><span>checks auth and OWASP</span></div><div class="agent"><strong>learnings-researcher</strong><span>recalls memory</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="loop">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">The flywheel</span><h2 style="margin-top:18px">Engineering that <span class="grad">compounds.</span></h2></div>
+      <p class="lead">The killer feature. Every solved problem is captured as a typed learning <em>and</em> a linked note in an Obsidian memory vault. Before the next plan, the <code>learnings-researcher</code> recalls what's relevant — so the team sharpens with every task instead of starting from zero.</p>
+    </div>
+
+    <div class="mem reveal d1">
+      <figure class="mem-shot"><img src="obsidian_build.gif" alt="Building the Obsidian memory vault — linked notes forming a knowledge graph" loading="lazy"/></figure>
+      <div>
+        <span class="eyebrow">Durable memory</span>
+        <h3>An Obsidian vault is the <span class="grad">long-term brain.</span></h3>
+        <p class="lead" style="font-size:16px">Beyond the per-task <code>docs/</code> handoff, lessons land in a linked Obsidian knowledge base reached over MCP — decisions-in-context, codebase gotchas, and the fixes for them, growing into a navigable graph the whole team draws on.</p>
+        <ul class="mem-points">
+          <li><b>Linked notes, not a log.</b> Every learning connects to the files, decisions, and prior lessons it relates to.</li>
+          <li><b>Dual-write on <code>/learn</code>.</b> One typed artifact in <code>docs/learnings/</code> and one frontmatter-safe vault note.</li>
+          <li><b>Recalled before you plan.</b> <code>learnings-researcher</code> searches the vault first, so past work informs the next move.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="glass fig reveal d1">
+      <svg viewBox="0 0 900 300" role="img" aria-label="A loop: build, learn, store to vault and docs, recall, build better.">
+        <defs>
+          <linearGradient id="lp2" x1="0" y1="0" x2="900" y2="300"><stop offset="0" stop-color="#75a7ff"/><stop offset=".5" stop-color="#a479ff"/><stop offset="1" stop-color="#41e6d4"/></linearGradient>
+          <marker id="lah" markerWidth="11" markerHeight="11" refX="6" refY="3" orient="auto"><path d="M0 0l7 3-7 3z" fill="#a479ff"/></marker>
+        </defs>
+        <ellipse cx="450" cy="150" rx="330" ry="108" fill="none" stroke="url(#lp2)" stroke-width="2" stroke-dasharray="7 9" opacity=".7" marker-end="url(#lah)"/>
+        <g font-size="13" font-weight="700" fill="#f6f7fb" text-anchor="middle">
+          <g class="node n-build"><circle cx="120" cy="150" r="50" fill="#0e1018" stroke="#75a7ff" stroke-width="1.8"/><text x="120" y="148">Build</text><text x="120" y="166" font-size="10.5" font-weight="500" fill="#8e98ad">/implement</text></g>
+          <g class="node n-learn"><circle cx="340" cy="62" r="50" fill="#0e1018" stroke="#a479ff" stroke-width="1.8"/><text x="340" y="60">Learn</text><text x="340" y="78" font-size="10.5" font-weight="500" fill="#8e98ad">/learn</text></g>
+          <g class="node n-store"><circle cx="560" cy="62" r="52" fill="#0e1018" stroke="#41e6d4" stroke-width="1.8"/><text x="560" y="55">Store</text><text x="560" y="72" font-size="10" font-weight="500" fill="#8e98ad">docs/learnings</text><text x="560" y="85" font-size="10" font-weight="500" fill="#8e98ad">+ vault note</text></g>
+          <g class="node n-recall"><circle cx="780" cy="150" r="50" fill="#0e1018" stroke="#ffd55e" stroke-width="1.8"/><text x="780" y="148">Recall</text><text x="780" y="166" font-size="9.5" font-weight="500" fill="#8e98ad">researcher</text></g>
+          <g class="node n-better"><circle cx="450" cy="238" r="54" fill="#0e1018" stroke="url(#lp2)" stroke-width="2"/><text x="450" y="236">Build better</text><text x="450" y="254" font-size="10.5" font-weight="500" fill="#8e98ad">fewer repeats</text></g>
+        </g>
+        <text x="450" y="150" text-anchor="middle" fill="#576071" font-size="12" letter-spacing="3">THE LOOP</text>
+      </svg>
+    </div>
+    <div class="timeline">
+      <div class="time reveal d1"><div class="badge">01</div><div class="body glass"><h3>Plan with a high-reasoning agent</h3><p>Use expensive reasoning for architecture, risk, sequencing, and acceptance criteria.</p></div></div>
+      <div class="time reveal d2"><div class="badge">02</div><div class="body glass"><h3>Edit with a fast implementer</h3><p>Apply diffs against a concrete story. The model is no longer inventing the plan while coding.</p></div></div>
+      <div class="time reveal d3"><div class="badge">03</div><div class="body glass"><h3>Verify with parallel reviewers</h3><p>Code quality, security, and performance fan out and converge into evidence-backed findings.</p></div></div>
+      <div class="time reveal d4"><div class="badge">04</div><div class="body glass"><h3>Store learnings for next time</h3><p>Every solved problem becomes institutional memory that future agents can retrieve.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="split">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">The split</span><h2 style="margin-top:18px">Plan heavy. <span class="grad">Edit cheap.</span></h2></div>
+      <p class="lead">A high-reasoning architect designs against a story; a fast implementer applies the diff. Right model, right job — better output, lower cost. Judgment stays in the main thread; context-heavy work is delegated.</p>
+    </div>
+    <div class="glass fig reveal d1">
+      <svg viewBox="0 0 900 230" role="img" aria-label="Architect plans against a story; implementer applies the diff and tests.">
+        <defs>
+          <linearGradient id="sg2" x1="0" y1="0" x2="900" y2="0"><stop offset="0" stop-color="#75a7ff"/><stop offset="1" stop-color="#a479ff"/></linearGradient>
+          <linearGradient id="sg3" x1="0" y1="0" x2="900" y2="0"><stop offset="0" stop-color="#a479ff"/><stop offset="1" stop-color="#41e6d4"/></linearGradient>
+          <marker id="sah" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0 0l7 3-7 3z" fill="#8e98ad"/></marker>
+        </defs>
+        <rect x="30" y="78" width="150" height="74" rx="12" fill="rgba(117,167,255,.10)" stroke="#75a7ff" stroke-width="1.5"/>
+        <text x="105" y="104" text-anchor="middle" fill="#f6f7fb" font-size="14" font-weight="700">story.md</text>
+        <text x="105" y="124" text-anchor="middle" fill="#8e98ad" font-size="11">AC · context · refs</text>
+        <line x1="180" y1="115" x2="250" y2="115" stroke="#8e98ad" stroke-width="1.5" marker-end="url(#sah)"/>
+        <rect x="252" y="58" width="178" height="114" rx="14" fill="rgba(164,121,255,.10)" stroke="url(#sg2)" stroke-width="1.8"/>
+        <text x="341" y="92" text-anchor="middle" fill="#f6f7fb" font-size="15" font-weight="800">architect</text>
+        <text x="341" y="113" text-anchor="middle" fill="#8e98ad" font-size="11">high-reasoning model</text>
+        <text x="341" y="133" text-anchor="middle" fill="#c9b6ff" font-size="11">plans · no code</text>
+        <text x="341" y="150" text-anchor="middle" fill="#8e98ad" font-size="10.5">which files, what order, tests</text>
+        <line x1="430" y1="115" x2="500" y2="115" stroke="#8e98ad" stroke-width="1.5" marker-end="url(#sah)"/>
+        <text x="465" y="106" text-anchor="middle" fill="#8e98ad" font-size="10">plan</text>
+        <rect x="502" y="58" width="178" height="114" rx="14" fill="rgba(65,230,212,.10)" stroke="url(#sg3)" stroke-width="1.8"/>
+        <text x="591" y="92" text-anchor="middle" fill="#f6f7fb" font-size="15" font-weight="800">implementer</text>
+        <text x="591" y="113" text-anchor="middle" fill="#8e98ad" font-size="11">fast model</text>
+        <text x="591" y="133" text-anchor="middle" fill="#9af0e2" font-size="11">applies diff · TDD</text>
+        <text x="591" y="150" text-anchor="middle" fill="#8e98ad" font-size="10.5">runs tests · flips ACs</text>
+        <line x1="680" y1="115" x2="750" y2="115" stroke="#8e98ad" stroke-width="1.5" marker-end="url(#sah)"/>
+        <rect x="752" y="78" width="120" height="74" rx="12" fill="rgba(65,230,212,.08)" stroke="#41e6d4" stroke-width="1.5"/>
+        <text x="812" y="104" text-anchor="middle" fill="#f6f7fb" font-size="14" font-weight="700">diff</text>
+        <text x="812" y="124" text-anchor="middle" fill="#41e6d4" font-size="11">+ tests ✓</text>
+        <text x="450" y="30" text-anchor="middle" fill="#576071" font-size="11" letter-spacing="2">JUDGMENT STAYS IN THE MAIN THREAD · CONTEXT-HEAVY WORK IS DELEGATED</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="gates">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">Quality gates</span><h2 style="margin-top:18px">Nothing ships on a vibe.</h2></div>
+      <p class="lead">Verification is structural, not optional. Reviews fan out in parallel; completion claims require fresh evidence; disciplines load as enforced skills.</p>
+    </div>
+    <div class="cards">
+      <article class="card hl reveal d1">
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><circle cx="9" cy="9" r="4" stroke="#75a7ff" stroke-width="1.8"/><circle cx="23" cy="9" r="4" stroke="#a479ff" stroke-width="1.8"/><circle cx="16" cy="23" r="4" stroke="#41e6d4" stroke-width="1.8"/><path d="M9 13v3a3 3 0 0 0 3 3h1M23 13v3a3 3 0 0 1-3 3h-1" stroke="#8e98ad" stroke-width="1.5"/></svg>
+        <h3>Parallel review fan-out</h3><p><code>/review</code> runs code, security, and performance auditors at once, then aggregates by severity — not by reviewer. Anti-slop guardrails kill confident-but-wrong findings.</p></article>
+      <article class="card hl reveal d2">
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M6 16l6 6 14-14" stroke="#41e6d4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Verification gate</h3><p><code>/ship</code> won't claim "done" without running the command and reading the output. Stub scan, real test results, every acceptance criterion checked.</p></article>
+      <article class="card hl reveal d3">
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 3v26M16 3l-7 7M16 3l7 7" stroke="#ffd55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="24" r="5" stroke="#ffd55e" stroke-width="1.8"/></svg>
+        <h3>Disciplines as skills</h3><p><code>test-driven-development</code> and <code>systematic-debugging</code> load on trigger — RED→GREEN→REFACTOR, and no fix without a reproduction and a named root cause.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="section-head split-head reveal">
+      <div><span class="eyebrow">The advantage</span><h2 style="margin-top:18px">Why teams reach for it.</h2></div>
+      <p class="lead">Not more AI — AI with the operating discipline of a good engineering org, encoded once and applied every session.</p>
+    </div>
+    <div class="cards">
+      <article class="card reveal d1"><svg class="ic" viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="22" height="22" rx="4" stroke="currentColor" stroke-width="1.8"/><path d="M11 16h10M16 11v10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>Survives /clear</h3><p>State lives in git-tracked artifacts and a memory vault — not a fragile transcript. Reset anytime; pick up cold.</p></article>
+      <article class="card reveal d1"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 3v26M6 9l10-6 10 6M6 23l10 6 10-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <h3>Compounds over time</h3><p>The learning flywheel means task N+1 is informed by task N. Your AI team accrues institutional memory.</p></article>
+      <article class="card reveal d2"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M4 16h7l3-8 4 16 3-8h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Right-sized, always</h3><p>Complexity sets the depth, not a fixed process. Trivial work stays fast; risky work gets gated.</p></article>
+      <article class="card reveal d2"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 4l11 4v6c0 7-5 12-11 14C10 26 5 21 5 14V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 15l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Anti-hallucination, anti-slop</h3><p>A strict knowledge-verification chain and reviewer guardrails catch invented APIs and silent failures before they merge.</p></article>
+      <article class="card reveal d3"><svg class="ic" viewBox="0 0 32 32" fill="none"><circle cx="10" cy="10" r="5" stroke="currentColor" stroke-width="1.8"/><circle cx="22" cy="22" r="5" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Cost-aware by design</h3><p>Heavy model to plan, fast model to edit, parallel agents for breadth. Spend reasoning where it pays off.</p></article>
+      <article class="card reveal d3"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M6 6h20v20H6z" stroke="currentColor" stroke-width="1.8"/><path d="M6 12h20M12 12v14" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h3>Drop-in &amp; portable</h3><p>Pure markdown + one shell hook. Add it to any repo in minutes; nothing to host, nothing to learn but a few slash commands.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap reveal">
+    <span class="eyebrow">Ready to ship</span>
+    <h2 style="margin-top:18px">Give your AI a process.<br><span class="grad">Then let it compound.</span></h2>
+    <p class="lead">Drop the scaffold into a repo, start with a command, and let the right specialist take the next step.</p>
+    <div class="cta" style="justify-content:center"><a class="btn primary" href="https://github.com/Ishmam97/Forge">View the repo</a><a class="btn" href="#top">Back to top</a><code>/brownfield:onboard</code></div>
+  </div>
+</section>
+
+<footer class="footer"><div class="wrap"><strong>Ishmam Solaiman</strong><span class="links"><a href="https://ishmamsolaiman.com" target="_blank" rel="noopener">ishmamsolaiman.com</a><a href="https://github.com/ishmam97" target="_blank" rel="noopener">GitHub</a><a href="https://linkedin.com/in/iasolaiman" target="_blank" rel="noopener">LinkedIn</a></span></div></footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  function setProgress(){const h=document.documentElement;const max=h.scrollHeight-h.clientHeight;progress.style.width=(max? h.scrollTop/max*100:0)+'%'}
+  addEventListener('scroll',setProgress,{passive:true}); setProgress();
+
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+  reveals.forEach(el=>io.observe(el));
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function countUp(el){const target=Number(el.dataset.count||0); if(reduce){el.textContent=target;return} const t0=performance.now(); const dur=1200; function tick(t){const p=Math.min(1,(t-t0)/dur); const eased=1-Math.pow(1-p,3); el.textContent=Math.round(target*eased); if(p<1)requestAnimationFrame(tick)} requestAnimationFrame(tick)}
+  const co = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){countUp(e.target);co.unobserve(e.target)}}),{threshold:.7});
+  document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+
+  const matrix = document.getElementById('matrix');
+  const total = 2500;
+  const counts = {code:3, paid:18, free:528};
+  const cells = Array.from({length:total},(_,i)=>({i, cls:'gray'}));
+  // Fill from the bottom-left toward the right, row by row, matching the reference graphic's visual logic.
+  const order=[];
+  for(let r=49;r>=0;r--){ for(let c=0;c<50;c++){ order.push(r*50+c); } }
+  let cursor=0;
+  for(let n=0;n<counts.free;n++) cells[order[cursor++]].cls='free';
+  for(let n=0;n<counts.paid;n++) cells[order[cursor++]].cls='paid';
+  for(let n=0;n<counts.code;n++) cells[order[cursor++]].cls='code';
+  // ~500k is a fraction of one dot (each = ~3.3M) — represent it as a single magnified, distinctly-colored dot at the tail.
+  cells[order[cursor++]].cls='scaffold';
+  cells.forEach((cell,idx)=>{const d=document.createElement('span');d.className='dot '+cell.cls;d.style.setProperty('--i',idx);d.title=cell.cls==='gray'?'Never used AI':cell.cls==='free'?'Free chatbot user':cell.cls==='paid'?'Pays $20/mo for AI':cell.cls==='code'?'Uses tools like Claude Code, Codex, OpenCode':'Agent scaffolding & managed workflows (~500k)';matrix.appendChild(d)});
+</script>
+</body>
+</html>
