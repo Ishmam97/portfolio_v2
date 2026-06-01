@@ -54,133 +54,144 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 sm:py-20 px-4">
+    <section id="contact" className="relative py-20 sm:py-24 px-4">
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-cyber-darker/90" />
+        <div className="absolute -top-12 left-1/4 h-52 w-52 rounded-full bg-neon-purple/20 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-60 w-60 rounded-full bg-neon-green/15 blur-3xl" />
+      </div>
       <div className="container mx-auto max-w-6xl">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-neon-yellow mb-12 sm:mb-16 animate-fade-in-up">
-          Get In Touch
-        </h2>
+        <div className="relative z-10 rounded-2xl border border-neon-purple/60 bg-cyber-dark/90 p-6 sm:p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-neon-yellow mb-3 animate-fade-in-up">
+            Get In Touch
+          </h2>
+          <p className="mx-auto mb-10 max-w-3xl text-center text-neon-green/90 text-sm sm:text-base">
+            Open to collaboration, consulting, and AI engineering opportunities.
+          </p>
         
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          <div className="space-y-6 sm:space-y-8">
-            <div className="animate-fade-in-up">
-              <h3 className="text-xl sm:text-2xl font-bold text-neon-green mb-4 sm:mb-6">Let's Connect</h3>
-              <p className="text-neon-pink text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">
-                I'm always open to discussing new opportunities, collaborations, or just having a chat about technology and innovation. Feel free to reach out!
-              </p>
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="space-y-6 sm:space-y-8">
+              <div className="animate-fade-in-up rounded-xl border border-neon-green/35 bg-cyber-dark/80 p-5 sm:p-6">
+                <h3 className="text-xl sm:text-2xl font-bold text-neon-green mb-3 sm:mb-4">Let's Connect</h3>
+                <p className="text-neon-pink text-base sm:text-lg leading-relaxed">
+                  I&apos;m always open to discussing new opportunities, collaborations, or just
+                  talking about technology and innovation.
+                </p>
+              </div>
+
+              <div className="space-y-4 sm:space-y-6">
+                <Card className="bg-cyber-dark/95 border-neon-purple hover:border-neon-green transition-colors">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <Mail className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="text-neon-green font-semibold text-sm sm:text-base">Email</h4>
+                        <p className="text-neon-pink text-sm sm:text-base break-all">ishmam.solaiman@gmail.com</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-cyber-dark/95 border-neon-purple hover:border-neon-green transition-colors">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <Linkedin className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="text-neon-green font-semibold text-sm sm:text-base">LinkedIn</h4>
+                        <a 
+                          href="https://linkedin.com/in/ishmam-solaiman" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-neon-pink hover:text-neon-yellow transition-colors text-sm sm:text-base break-all"
+                        >
+                          linkedin.com/in/ishmam-solaiman
+                        </a>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-cyber-dark/95 border-neon-purple hover:border-neon-green transition-colors">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <Github className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="text-neon-green font-semibold text-sm sm:text-base">GitHub</h4>
+                        <a 
+                          href="https://github.com/Ishmam97" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-neon-pink hover:text-neon-yellow transition-colors text-sm sm:text-base break-all"
+                        >
+                          github.com/Ishmam97
+                        </a>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
-            <div className="space-y-4 sm:space-y-6">
-              <Card className="bg-cyber-dark border-neon-purple hover:border-neon-green transition-colors">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center space-x-3 sm:space-x-4">
-                    <Mail className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="text-neon-green font-semibold text-sm sm:text-base">Email</h4>
-                      <p className="text-neon-pink text-sm sm:text-base break-all">ishmam.solaiman@gmail.com</p>
-                    </div>
+            <Card className="bg-cyber-dark/95 border-neon-purple animate-fade-in-up">
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-neon-green flex items-center text-lg sm:text-xl">
+                  <MessageSquare className="mr-2 w-5 h-5 sm:w-6 sm:h-6" />
+                  Send a Message
+                </CardTitle>
+                <CardDescription className="text-neon-pink text-sm sm:text-base">
+                  Fill out the form below and I&apos;ll get back to you as soon as possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div>
+                    <Input
+                      name="name"
+                      placeholder="Your Name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-cyber-dark border-neon-purple hover:border-neon-green transition-colors">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center space-x-3 sm:space-x-4">
-                    <Linkedin className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="text-neon-green font-semibold text-sm sm:text-base">LinkedIn</h4>
-                      <a 
-                        href="https://linkedin.com/in/ishmam-solaiman" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-neon-pink hover:text-neon-yellow transition-colors text-sm sm:text-base break-all"
-                      >
-                        linkedin.com/in/ishmam-solaiman
-                      </a>
-                    </div>
+                  <div>
+                    <Input
+                      name="email"
+                      type="email"
+                      placeholder="Your Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-cyber-dark border-neon-purple hover:border-neon-green transition-colors">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center space-x-3 sm:space-x-4">
-                    <Github className="text-neon-yellow w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="text-neon-green font-semibold text-sm sm:text-base">GitHub</h4>
-                      <a 
-                        href="https://github.com/Ishmam97" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-neon-pink hover:text-neon-yellow transition-colors text-sm sm:text-base break-all"
-                      >
-                        github.com/Ishmam97
-                      </a>
-                    </div>
+                  <div>
+                    <Textarea
+                      name="message"
+                      placeholder="Your Message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={4}
+                      className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow resize-none text-sm sm:text-base min-h-[100px] sm:min-h-[120px]"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-neon-yellow text-cyber-dark hover:bg-neon-green transition-colors font-semibold text-sm sm:text-base h-10 sm:h-12"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="mr-2 w-4 h-4" />
+                    )}
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           </div>
-
-          <Card className="bg-cyber-dark border-neon-purple animate-fade-in-up">
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-neon-green flex items-center text-lg sm:text-xl">
-                <MessageSquare className="mr-2 w-5 h-5 sm:w-6 sm:h-6" />
-                Send a Message
-              </CardTitle>
-              <CardDescription className="text-neon-pink text-sm sm:text-base">
-                Fill out the form below and I'll get back to you as soon as possible.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6 pt-0">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                <div>
-                  <Input
-                    name="name"
-                    placeholder="Your Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
-                  />
-                </div>
-                <div>
-                  <Input
-                    name="email"
-                    type="email"
-                    placeholder="Your Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
-                  />
-                </div>
-                <div>
-                  <Textarea
-                    name="message"
-                    placeholder="Your Message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={4}
-                    className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow resize-none text-sm sm:text-base min-h-[100px] sm:min-h-[120px]"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-neon-yellow text-cyber-dark hover:bg-neon-green transition-colors font-semibold text-sm sm:text-base h-10 sm:h-12"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="mr-2 w-4 h-4" />
-                  )}
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>

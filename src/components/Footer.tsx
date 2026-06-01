@@ -24,7 +24,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full bg-cyber-darker border-t-2 border-neon-purple py-8 sm:py-12 px-4">
+    <footer className="relative z-20 w-full bg-cyber-darker border-t-2 border-neon-purple py-8 sm:py-12 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Brand */}
