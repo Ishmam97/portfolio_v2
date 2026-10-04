@@ -12,10 +12,11 @@ interface ChatMessage {
   message: string;
 }
 
-// Gemini returns transient 503/429 under load; one short retry avoids most fallbacks.
+// Gemini returns transient 503s under load; one short retry avoids most fallbacks.
+// A 429 is a quota error, so it is not retried here: the caller moves to the next model instead.
 async function fetchWithRetry(url: string, init: RequestInit, retries = 1): Promise<Response> {
   let res = await fetch(url, init);
-  for (let i = 0; i < retries && (res.status === 503 || res.status === 429); i++) {
+  for (let i = 0; i < retries && res.status === 503; i++) {
     await new Promise((r) => setTimeout(r, 1200));
     res = await fetch(url, init);
   }
@@ -157,6 +158,11 @@ ${context.trim()}`;
     let botMessage: string | null = null;
     let cards: CardRef[] = [];
     let geminiError: unknown = null;
+    let geminiModelUsed: string | null = null;
+    const geminiModels = (Deno.env.get("GEMINI_MODELS") ?? "gemini-flash-latest,gemini-flash-lite-latest,gemini-2.5-flash-lite")
+      .split(",")
+      .map((m) => m.trim())
+      .filter(Boolean);
     let source: "gemini" | "openrouter" | null = null;
 
     // Try Gemini API first
@@ -165,76 +171,88 @@ ${context.trim()}`;
         throw new Error("GEMINI_API_KEY is not configured");
       }
 
-      const geminiResponse = await fetchWithRetry(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      const geminiInit: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
           },
-          body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: systemPrompt }],
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: message }],
             },
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: message }],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 2048,
-              responseMimeType: "application/json",
-              responseSchema: {
-                type: "OBJECT",
-                properties: {
-                  reply: { type: "STRING" },
-                  cards: {
-                    type: "ARRAY",
-                    items: {
-                      type: "OBJECT",
-                      properties: {
-                        type: { type: "STRING", enum: ["project", "experience"] },
-                        id: { type: "STRING" },
-                      },
-                      required: ["type", "id"],
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 2048,
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                reply: { type: "STRING" },
+                cards: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      type: { type: "STRING", enum: ["project", "experience"] },
+                      id: { type: "STRING" },
                     },
+                    required: ["type", "id"],
                   },
                 },
-                required: ["reply", "cards"],
               },
-              thinkingConfig: {
-                thinkingBudget: 0,
-              },
+              required: ["reply", "cards"],
             },
-            safetySettings: [
-              {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE",
-              },
-              {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE",
-              },
-              {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE",
-              },
-              {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE",
-              },
-            ],
-          }),
-        }
-      );
+            thinkingConfig: {
+              thinkingBudget: 0,
+            },
+          },
+          safetySettings: [
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE",
+            },
+            {
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE",
+            },
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE",
+            },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE",
+            },
+          ],
+        }),
+      };
 
-      if (!geminiResponse.ok) {
-        const errorData = await geminiResponse.text();
-        throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorData}`);
+      // Free-tier quota is per model, so walk the chain when one is exhausted/overloaded/unknown.
+      let geminiResponse: Response | null = null;
+      const modelErrors: string[] = [];
+      for (const model of geminiModels) {
+        const res = await fetchWithRetry(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+          geminiInit
+        );
+        if (res.ok) {
+          geminiResponse = res;
+          geminiModelUsed = model;
+          break;
+        }
+        modelErrors.push(`${model}: ${res.status} ${(await res.text()).slice(0, 200)}`);
+        if (![400, 404, 429, 503].includes(res.status)) break;
+      }
+      if (!geminiResponse) {
+        throw new Error(`Gemini API error: ${modelErrors.join(" | ")}`);
       }
 
       const aiResponse = await geminiResponse.json();
@@ -247,6 +265,7 @@ ${context.trim()}`;
       }
       ({ reply: botMessage, cards } = parseModelOutput(text));
       source = "gemini";
+      console.log(`Answered by Gemini model: ${geminiModelUsed}`);
     } catch (err) {
       geminiError = err;
       console.error("Gemini API failed, falling back to OpenRouter:", err);
