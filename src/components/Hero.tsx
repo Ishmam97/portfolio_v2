@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Brain, Sparkles, Zap } from 'lucide-react';
 import { LayoutGroup, motion, useReducedMotion } from 'framer-motion';
 import AdvancedChatbotInterface from './AdvancedChatbotInterface';
@@ -92,7 +91,7 @@ const Hero = () => {
       style={{ scrollMarginTop: "80px" }} // for in-page anchor navigation safety
     >
       <LayoutGroup>
-      <div className={`section-container relative w-full ${showChatbot ? 'max-w-[92rem] min-h-[760px] md:min-h-[700px]' : 'max-w-6xl min-h-[820px] md:min-h-[760px]'}`}>
+      <div className={`section-container relative w-full lg:w-[85vw] lg:max-w-none lg:h-[85vh] ${showChatbot ? 'max-w-[92rem] min-h-[760px] md:min-h-[700px]' : 'max-w-6xl min-h-[820px] md:min-h-[760px]'}`}>
         {shattering && (
           <motion.div
             layoutId="twin-window"
@@ -128,109 +127,136 @@ const Hero = () => {
             </motion.div>
           </motion.div>
         )}
-        <div className={`relative z-10 flex flex-col lg:flex-row items-center justify-between gap-2 ${showChatbot ? 'lg:gap-6' : 'lg:gap-12'} min-h-[720px] md:min-h-[640px]`}>
-          {/* Profile Image + CTA - hidden while chatting (avatar moves into the chat) */}
+        <div className={`relative z-10 flex flex-col lg:flex-row items-center justify-center gap-2 ${showChatbot ? 'lg:gap-6' : 'lg:gap-[clamp(2rem,5vw,8rem)]'} min-h-[720px] md:min-h-[640px] lg:h-full lg:min-h-0`}>
+          {/* Photo + brain + primary CTA - hidden while chatting (avatar moves into the chat) */}
           {!showChatbot && (
-          <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center self-center">
-            <div className="relative mb-3 sm:mb-6">
+          <div className="flex-shrink-0 order-1 lg:order-2 flex flex-col items-center justify-center self-center gap-5 w-full lg:w-auto">
+            <div className="relative mt-10">
+              {/* rotating neon ring + breathing glow */}
+              <div className={`pointer-events-none absolute -inset-4 transition-opacity duration-500 ${shattering ? 'opacity-0' : 'opacity-100'}`}>
+                <div className="absolute inset-0 rounded-full bg-neon-green/20 blur-2xl animate-pulse" />
+                <div
+                  className="absolute inset-0 rounded-full animate-spin [animation-duration:14s] [background:conic-gradient(from_0deg,#00ff9c,transparent_30%,#b45cff_55%,transparent_80%,#00ff9c)] [mask:radial-gradient(farthest-side,transparent_calc(100%-3px),#000_calc(100%-2px))]"
+                />
+              </div>
               <motion.img
                 layoutId="twin-photo"
                 src="/assets/IMG_5747.jpeg"
-                alt="Ishmam A. Solaiman" 
-                className="rounded-full object-cover border-4 border-neon-purple shadow-lg hover:shadow-neon-green/50 transition-all duration-300 w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80"
+                alt="Ishmam A. Solaiman"
+                className="relative rounded-full object-cover border-4 border-[#07090f] shadow-lg w-56 h-56 sm:w-64 sm:h-64 lg:h-[clamp(16rem,20vw,28rem)] lg:w-[clamp(16rem,20vw,28rem)]"
               />
-              {shattering && (
-                <div className="pointer-events-none absolute inset-x-0 -top-12 z-10 flex justify-center">
-                  <motion.span layoutId="twin-brain" className="block">
-                    <motion.span
-                      className="block"
-                      initial={{ y: 70, scale: 0.15, opacity: 0, filter: 'blur(6px)' }}
-                      animate={{ y: 0, scale: 1, opacity: 1, filter: 'blur(0px)' }}
-                      transition={{ type: 'spring', stiffness: 90, damping: 14, delay: 0.7 }}
-                    >
-                      <motion.span
-                        className="block"
-                        animate={{ scale: [1, 1.12, 1] }}
-                        transition={{ duration: 0.9, repeat: Infinity, delay: 1.6 }}
-                      >
-                        <Brain className="h-16 w-16 text-neon-green drop-shadow-[0_0_14px_rgba(0,255,156,0.95)]" />
-                      </motion.span>
-                    </motion.span>
+              {/* the brain "implanted" on the head; lifts off when the chat opens */}
+              <div className="pointer-events-none absolute inset-x-0 -top-11 z-10 flex justify-center">
+                <motion.span layoutId="twin-brain" className="block">
+                  <motion.span
+                    className="block"
+                    animate={shattering ? { y: -14, scale: 1.35 } : { y: [0, -6, 0], scale: 1 }}
+                    transition={
+                      shattering
+                        ? { type: 'spring', stiffness: 90, damping: 12 }
+                        : { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+                    }
+                  >
+                    <Brain className="h-14 w-14 text-neon-green drop-shadow-[0_0_14px_rgba(0,255,156,0.95)]" />
                   </motion.span>
-                </div>
-              )}
+                </motion.span>
+              </div>
             </div>
-            
-            <Button
-              type="button"
-              onClick={handleChatbotToggle}
-              className={`bg-neon-purple hover:bg-neon-purple/80 text-cyber-dark font-semibold px-6 py-3 rounded-lg transition-all duration-700 ${shattering ? '!bg-transparent !shadow-none' : ''} hover:scale-105 shadow-lg hover:shadow-neon-purple/50 flex items-center gap-2`}
-              tabIndex={0}
-            >
-              <span className={`animate-pulse transition-opacity duration-500 ${shattering ? 'opacity-0' : ''}`}>🧠</span>
-              <Shatter text="Talk to my AI-powered digital twin" active={shattering} />
-            </Button>
+
+            <p className="font-mono text-xs lg:text-[clamp(0.75rem,0.9vw,1.05rem)] text-neon-green/80 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-neon-green animate-pulse" />
+              <Shatter text="digital_twin: online" active={shattering} />
+            </p>
+
+            <div className="w-full max-w-sm lg:max-w-[clamp(20rem,24vw,36rem)]">
+              <motion.button
+                type="button"
+                onClick={handleChatbotToggle}
+                className={`group relative w-full overflow-hidden rounded-md border-2 px-6 py-4 font-mono text-base sm:text-lg lg:text-[clamp(1rem,1.15vw,1.6rem)] lg:whitespace-nowrap font-bold transition-colors duration-500 ${
+                  shattering
+                    ? 'border-transparent bg-transparent text-neon-green'
+                    : 'border-neon-green bg-neon-green text-cyber-dark hover:bg-neon-yellow hover:border-neon-yellow'
+                }`}
+                animate={
+                  shattering
+                    ? { boxShadow: '0 0 0px rgba(0,255,156,0)' }
+                    : { boxShadow: ['0 0 18px rgba(0,255,156,0.45)', '0 0 42px rgba(0,255,156,0.85)', '0 0 18px rgba(0,255,156,0.45)'] }
+                }
+                transition={shattering ? { duration: 0.4 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                whileHover={shattering ? undefined : { scale: 1.04 }}
+                whileTap={shattering ? undefined : { scale: 0.98 }}
+              >
+                {!shattering && (
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                    initial={{ left: '-40%' }}
+                    animate={{ left: '140%' }}
+                    transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }}
+                  />
+                )}
+                <span className="relative flex items-center justify-center gap-2">
+                  <span className={shattering ? 'opacity-0' : ''}>{'>_'}</span>
+                  <Shatter text="Talk to my digital twin" active={shattering} />
+                </span>
+              </motion.button>
+              <p className="mt-2 text-center font-mono text-[11px] lg:text-[clamp(0.7rem,0.8vw,0.95rem)] text-neon-green/60">
+                <Shatter text="ask about Optimizely, RAG systems, research…" active={shattering} />
+              </p>
+            </div>
           </div>
           )}
 
           {/* Text/Chat Section - Always second on mobile, first on desktop */}
           {!showChatbot ? (
           <div
-            className="flex-1 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center px-4 lg:px-0"
-            style={{
-              minHeight: 512,
-              maxHeight: 'none',
-              overflow: "visible",
-              width: '100%'
-            }}
+            className="relative flex-1 lg:flex-none lg:min-w-0 lg:max-w-[min(44vw,64rem)] text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center px-4 lg:px-0 w-full"
+            style={{ minHeight: 512 }}
           >
-            <p className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 transition-colors duration-500 ${shattering ? 'border-transparent bg-transparent' : 'border-neon-yellow/60 bg-neon-yellow/20'} text-xs sm:text-sm font-semibold text-neon-yellow mb-5 animate-fade-in-up`}>
-              <span className="h-2 w-2 rounded-full bg-neon-yellow animate-pulse" />
-              <Shatter text="Agentic SWE • AI Product Builder" active={shattering} />
+            <div className="pointer-events-none absolute -inset-4 opacity-[0.06] [background:repeating-linear-gradient(0deg,rgba(0,255,156,0.5)_0_1px,transparent_1px_3px)]" />
+
+            <p className="relative mb-3 font-mono text-sm lg:text-[clamp(0.85rem,1vw,1.2rem)] text-neon-green/70 animate-fade-in-up">
+              <Shatter text="$ whoami" active={shattering} />
             </p>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 lg:mb-6 animate-fade-in-up leading-tight">
+            <h1 className="relative mb-4 lg:mb-5 text-4xl sm:text-5xl lg:text-[clamp(2.6rem,4vw,5.5rem)] lg:whitespace-nowrap font-bold leading-tight animate-fade-in-up [text-shadow:0_0_24px_rgba(255,230,0,0.35)]">
               <Shatter className="text-neon-yellow" text="Ishmam A. Solaiman" active={shattering} />
             </h1>
 
-            <div style={{ width: '100%', height: '100%' }}>
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-6 lg:mb-8 h-10 sm:h-12 flex items-center justify-center lg:justify-start">
-                  <Shatter className="text-neon-green font-semibold" text={displayText} active={shattering} />
-                  <span className="animate-pulse text-neon-yellow ml-1">|</span>
-                </div>
+            <div className="relative mb-6 flex min-h-10 items-center justify-center font-mono text-lg sm:text-xl lg:text-[clamp(1.3rem,2vw,2.6rem)] lg:justify-start">
+              <Shatter className="text-neon-green/60 mr-3" text="> role:" active={shattering} />
+              <Shatter className="text-neon-green font-semibold" text={displayText} active={shattering} />
+              <span className="ml-1 animate-pulse text-neon-yellow">▌</span>
+            </div>
 
-                <p className="text-neon-pink text-base sm:text-lg md:text-xl mb-6 lg:mb-8 max-w-2xl animate-fade-in-up delay-300">
-                  <Shatter
-                    text="I build high-performance AI applications from prototype to production, combining strong product intuition with rigorous software engineering."
-                    active={shattering}
-                  />
-                </p>
+            <p className="relative mb-7 max-w-[34em] text-base sm:text-lg lg:text-[clamp(1.05rem,1.3vw,1.7rem)] text-gray-300 animate-fade-in-up delay-300">
+              <Shatter
+                text="I build high-performance AI applications from prototype to production, combining strong product intuition with rigorous software engineering."
+                active={shattering}
+              />
+            </p>
 
-                <div className="space-y-4 lg:space-y-5 animate-fade-in-up delay-500">
-                  {specialties.map((specialty, index) => (
-                    <div key={index} className={`flex items-start lg:items-center justify-center lg:justify-start text-neon-pink text-sm sm:text-base lg:text-lg rounded-lg border p-3 transition-colors duration-500 ${shattering ? 'border-transparent bg-transparent' : 'bg-cyber-dark/70 border-neon-purple/40'}`}>
-                      <specialty.icon className="h-5 w-5 text-neon-green mr-3 lg:mr-4 flex-shrink-0 mt-0.5 lg:mt-0" />
-                      <Shatter className="text-left" text={specialty.text} active={shattering} />
-                    </div>
-                  ))}
-                </div>
+            <ul className="relative space-y-3 text-left animate-fade-in-up delay-500">
+              {specialties.map((specialty, index) => (
+                <li
+                  key={index}
+                  className="flex gap-3 border-l-2 border-neon-green/40 pl-3 font-mono text-sm sm:text-base lg:text-[clamp(0.95rem,1.1vw,1.45rem)] text-neon-green/90"
+                >
+                  <span className="text-neon-yellow">✓</span>
+                  <Shatter text={specialty.text} active={shattering} />
+                </li>
+              ))}
+            </ul>
 
-                <div className="mt-7 flex flex-col sm:flex-row items-center gap-3 lg:gap-4">
-                  <a href="#projects" className="w-full sm:w-auto">
-                    <Button className={`w-full sm:w-auto bg-neon-green text-cyber-dark hover:bg-neon-green/85 font-semibold px-6 py-3 transition-colors duration-500 ${shattering ? '!bg-transparent !text-neon-green' : ''}`}>
-                      <Shatter text="View Projects" active={shattering} />
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
-                  <a href="#contact" className="w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      className={`w-full sm:w-auto border-neon-purple text-neon-purple hover:bg-neon-purple hover:text-cyber-dark font-semibold px-6 py-3 transition-colors duration-500 ${shattering ? '!border-transparent' : ''}`}
-                    >
-                      <Shatter text="Let's Build Together" active={shattering} />
-                    </Button>
-                  </a>
-                </div>
+            <div className="relative mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-sm lg:text-[clamp(0.9rem,1vw,1.3rem)] lg:justify-start">
+              <a href="#projects" className="group inline-flex items-center gap-1 text-neon-green/80 underline-offset-4 hover:text-neon-yellow hover:underline">
+                <Shatter text="view_projects" active={shattering} />
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
+              <a href="#contact" className="group inline-flex items-center gap-1 text-neon-green/80 underline-offset-4 hover:text-neon-yellow hover:underline">
+                <Shatter text="let's_build_together" active={shattering} />
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
             </div>
           </div>
             ) : (
