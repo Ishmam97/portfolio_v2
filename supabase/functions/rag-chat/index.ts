@@ -116,9 +116,10 @@ serve(async (req) => {
 
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     const openRouterApiKey = Deno.env.get("OPENROUTER_API_KEY");
+    const aimlApiKey = Deno.env.get("AIML_API_KEY");
 
-    if (!geminiApiKey && !openRouterApiKey) {
-      throw new Error("No LLM provider configured (set GEMINI_API_KEY and/or OPENROUTER_API_KEY)");
+    if (!geminiApiKey && !openRouterApiKey && !aimlApiKey) {
+      throw new Error("No LLM provider configured (set GEMINI_API_KEY, OPENROUTER_API_KEY and/or AIML_API_KEY)");
     }
 
     const systemPrompt = `You are the AI digital twin of Ishmam A. Solaiman.
@@ -165,7 +166,7 @@ ${context.trim()}`;
       .split(",")
       .map((m) => m.trim())
       .filter(Boolean);
-    let source: "gemini" | "openrouter" | null = null;
+    let source: "gemini" | "openrouter" | "aiml" | null = null;
 
     // Try Gemini API first
     try {
@@ -272,41 +273,71 @@ ${context.trim()}`;
       console.log(`Answered by Gemini model: ${geminiModelUsed}`);
     } catch (err) {
       geminiError = err;
-      console.error("Gemini API failed, falling back to OpenRouter:", err);
-      if (!openRouterApiKey) {
-        throw new Error(`Gemini failed and OPENROUTER_API_KEY is not configured: ${err}`);
-      }
-      // Fallback to OpenRouter
-      const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${openRouterApiKey}`,
-        },
-        body: JSON.stringify({
+      console.error("Gemini failed, trying fallback providers:", err);
+
+      // OpenAI-compatible fallbacks, tried in order. AIML is the cheap last resort.
+      const fallbacks: { name: "openrouter" | "aiml"; url: string; key: string; model: string }[] = [];
+      if (openRouterApiKey) {
+        fallbacks.push({
+          name: "openrouter",
+          url: "https://openrouter.ai/api/v1/chat/completions",
+          key: openRouterApiKey,
           model: Deno.env.get("OPENROUTER_MODEL") ?? "google/gemma-4-31b-it:free",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: message }
-          ],
-          max_tokens: 800,
-          response_format: { type: "json_object" },
-          temperature: 0.7,
-        })
-      });
-      attempts.push(`openrouter:${openRouterResponse.status}`);
-      if (!openRouterResponse.ok) {
-        const errorData = await openRouterResponse.text();
-        throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData} | gemini: ${(err as Error)?.message ?? err}`);
+        });
       }
-      const openRouterData = await openRouterResponse.json();
-      const openRouterText = openRouterData.choices?.[0]?.message?.content;
-      if (openRouterText) {
-        ({ reply: botMessage, cards } = parseModelOutput(openRouterText));
-      } else {
-        botMessage = "I'm sorry, I couldn't generate a response at this time.";
+      if (aimlApiKey) {
+        fallbacks.push({
+          name: "aiml",
+          url: "https://api.aimlapi.com/v1/chat/completions",
+          key: aimlApiKey,
+          model: Deno.env.get("AIML_MODEL") ?? "amazon/nova-micro-v1",
+        });
       }
-      source = "openrouter";
+      if (fallbacks.length === 0) {
+        throw new Error(`Gemini failed and no fallback provider is configured: ${err}`);
+      }
+
+      let lastError: unknown = err;
+      for (const fb of fallbacks) {
+        try {
+          const res = await fetch(fb.url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${fb.key}`,
+            },
+            body: JSON.stringify({
+              model: fb.model,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: message },
+              ],
+              max_tokens: 800,
+              response_format: { type: "json_object" },
+              temperature: 0.7,
+            }),
+          });
+          attempts.push(`${fb.name}:${res.status}`);
+          if (!res.ok) {
+            throw new Error(`${fb.name} API error: ${res.status} - ${(await res.text()).slice(0, 300)}`);
+          }
+          const data = await res.json();
+          const text = data.choices?.[0]?.message?.content;
+          if (!text) {
+            attempts.push(`${fb.name}:empty`);
+            throw new Error(`${fb.name} returned empty content`);
+          }
+          ({ reply: botMessage, cards } = parseModelOutput(text));
+          source = fb.name;
+          console.log(`Answered by ${fb.name} model: ${fb.model}`);
+          lastError = null;
+          break;
+        } catch (e) {
+          lastError = e;
+          console.error(`${fb.name} fallback failed:`, e);
+        }
+      }
+      if (lastError) throw lastError;
     }
 
     // Backstop: if the model skipped the cards, match the question against known names.
@@ -319,7 +350,8 @@ ${context.trim()}`;
         response: botMessage,
         cards,
         source,
-        geminiError: geminiError ? (geminiError as Error)?.message ?? String(geminiError) : null,
+        // Provider error text stays in the logs; clients only learn whether Gemini was skipped.
+        geminiFailed: geminiError !== null,
         relevantSections: relevantSections.map((s) => ({
           title: s.title,
           section_type: s.section_type,
