@@ -62,6 +62,23 @@ serve(async (req) => {
         },
       });
 
+    // Visitor identity from request headers only (never from the body, which the caller controls).
+    // Hashed IP; MAC addresses never reach a web server. If no IP can be determined, fall back to
+    // user-agent/language, and also charge a shared "anon" bucket so rotating the browser id
+    // cannot sidestep the limits.
+    const ip = clientIp(req);
+    const salt = Deno.env.get("IP_HASH_SALT") ?? "rag-chat";
+    const ipHash = await hashIp(
+      ip ?? `anon:${req.headers.get("user-agent") ?? ""}|${req.headers.get("accept-language") ?? ""}`,
+      salt
+    );
+
+    // Throttle BEFORE reading the body so malformed/oversized/empty requests count too.
+    const waitMem = memoryRetryAfter(ipHash);
+    if (waitMem > 0) {
+      return reject(429, "rate_limited", `You're sending messages quickly. Please wait ${waitMem}s and try again.`, waitMem);
+    }
+
     const parsed = await readJsonCapped(req, MAX_BODY_BYTES);
     if (!parsed.ok) {
       return parsed.tooLarge
@@ -82,32 +99,37 @@ serve(async (req) => {
       );
     }
 
-    // Visitor identity: hashed IP (+ anonymous browser id). MAC addresses never reach a web server.
-    // If no IP can be determined, key on the browser id / user-agent so visitors are not all
-    // lumped into one shared bucket where a single abuser would lock everyone out.
+    // Anonymous browser id: only an extra per-browser cap on top of the IP limits (it is spoofable).
     const clientId = cleanClientId(body.clientId);
-    const ip = clientIp(req);
-    const identity =
-      ip ?? `anon:${clientId ?? `${req.headers.get("user-agent") ?? ""}|${req.headers.get("accept-language") ?? ""}`}`;
-    const ipHash = await hashIp(identity, Deno.env.get("IP_HASH_SALT") ?? "rag-chat");
 
-    const waitMem = memoryRetryAfter(ipHash);
-    if (waitMem > 0) {
-      return reject(429, "rate_limited", `You're sending messages quickly. Please wait ${waitMem}s and try again.`, waitMem);
+    const checkLimit = async (key: string, cid: string | null, caps: Record<string, number> = {}) => {
+      const { data, error } = await supabaseClient.rpc("check_chat_rate_limit", {
+        p_ip_hash: key,
+        p_client_id: cid,
+        ...caps,
+      });
+      if (error) {
+        // Fail open so the chat keeps working if the migration has not been applied yet.
+        console.error("check_chat_rate_limit failed (rate limiting by memory only):", error.message);
+        return null;
+      }
+      return data?.[0] && !data[0].allowed ? data[0] : null;
+    };
+
+    let blockedBy = await checkLimit(ipHash, clientId);
+    if (!blockedBy && !ip) {
+      // No IP available: shared ceiling across all anonymous callers, generous but finite.
+      blockedBy = await checkLimit(await hashIp("anon-shared", salt), null, {
+        p_ip_per_min: 30,
+        p_ip_per_hour: 200,
+        p_ip_per_day: 600,
+      });
     }
-
-    const { data: limit, error: limitError } = await supabaseClient.rpc("check_chat_rate_limit", {
-      p_ip_hash: ipHash,
-      p_client_id: clientId,
-    });
-    if (limitError) {
-      // Fail open so the chat keeps working if the migration has not been applied yet.
-      console.error("check_chat_rate_limit failed (rate limiting by memory only):", limitError.message);
-    } else if (limit?.[0] && !limit[0].allowed) {
-      const wait = limit[0].retry_after_seconds ?? 60;
-      console.warn(`Rate limited (${limit[0].reason}) ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
+    if (blockedBy) {
+      const wait = blockedBy.retry_after_seconds ?? 60;
+      console.warn(`Rate limited (${blockedBy.reason}) ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
       const text =
-        limit[0].reason === "global_day"
+        blockedBy.reason === "global_day"
           ? "The chat has reached its daily limit. Please come back tomorrow, or reach me through the contact section."
           : `You've reached the chat limit for now. Please try again in ${wait > 90 ? Math.ceil(wait / 60) + " minutes" : wait + "s"}.`;
       return reject(429, "rate_limited", text, wait);
