@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
+import ChatContextPanel, { type ChatCardRef } from "./chat/ChatContextPanel";
 
 interface Message {
   id: string;
@@ -19,6 +20,7 @@ interface Message {
   isBot: boolean;
   timestamp: Date;
   relevantSections?: Array<{ title: string; section_type: string }>;
+  cards?: ChatCardRef[];
 }
 
 interface AdvancedChatbotInterfaceProps {
@@ -805,6 +807,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         isBot: true,
         timestamp: new Date(),
         relevantSections: data.relevantSections,
+        cards: Array.isArray(data.cards) ? data.cards : [],
       };
 
       setMessages((prev) => [...prev, botResponse]);
@@ -840,6 +843,10 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
     }
   };
 
+  // Cards follow the latest bot answer; an answer without cards closes the panel.
+  const activeCards =
+    [...messages].reverse().find((m) => m.isBot)?.cards ?? [];
+
   const suggestedQuestions = [
     "Tell me about your experience at Optimizely",
     "What AI/ML projects have you worked on?",
@@ -850,13 +857,8 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
 
   return (
     <div
-      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 max-w-5xl w-full animate-fade-in flex flex-col h-full shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
+      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 max-w-5xl w-full animate-fade-in flex flex-col h-[clamp(30rem,calc(100svh-11rem),46rem)] shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
       tabIndex={-1}
-      style={{
-        minHeight: 0,
-        maxHeight: '100%',
-        height: '100%'
-      }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background:repeating-linear-gradient(0deg,rgba(0,255,156,0.18)_0_1px,transparent_1px_3px)]" />
       {/* Header */}
@@ -906,6 +908,9 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         </div>
       </div>
 
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+      <ChatContextPanel cards={activeCards} />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {/* Messages */}
       <div
         className="relative z-10 flex-1 overflow-y-auto mb-4 space-y-3 scrollbar-thin scrollbar-thumb-neon-green/60 scrollbar-track-cyber-dark pr-1"
@@ -1052,6 +1057,8 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
           )}
         </Button>
       </form>
+      </div>
+      </div>
     </div>
   );
 };
