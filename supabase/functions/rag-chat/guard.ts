@@ -46,18 +46,25 @@ export function sanitizeReply(reply: string): string {
   return reply.length > MAX_REPLY_CHARS ? reply.slice(0, MAX_REPLY_CHARS) + "…" : reply;
 }
 
-// Client IP from proxy headers. cf-connecting-ip is set by Cloudflare (client values are overwritten);
-// for x-forwarded-for take the RIGHTMOST entry, which the nearest trusted proxy appended, because
-// anything to its left can be spoofed by the caller to dodge per-IP limits.
-export function clientIp(req: Request): string {
-  const cf = req.headers.get("cf-connecting-ip");
-  if (cf) return cf.trim();
+// Client IP from proxy headers, or null when it cannot be determined.
+// cf-connecting-ip is set by Cloudflare (client-supplied values are overwritten). For
+// x-forwarded-for, entries on the left can be spoofed by the caller, so count from the right:
+// TRUSTED_PROXY_HOPS (default 1) is how many proxies append to the header in front of this
+// function. Too small a value can collapse all visitors onto a proxy's address; too large trusts
+// spoofable entries - check the logged header shape (set IP_DEBUG=1) after deploying.
+export function clientIp(req: Request): string | null {
+  const cf = req.headers.get("cf-connecting-ip")?.trim();
+  if (cf) return cf;
   const parts = (req.headers.get("x-forwarded-for") ?? "")
     .split(",")
     .map((p) => p.trim())
     .filter(Boolean);
-  if (parts.length > 0) return parts[parts.length - 1];
-  return req.headers.get("x-real-ip")?.trim() || "unknown";
+  const hops = Math.max(1, Number(Deno.env.get("TRUSTED_PROXY_HOPS") ?? "1") || 1);
+  if (Deno.env.get("IP_DEBUG")) {
+    console.log(`ip-debug: cf=${cf ? "yes" : "no"} xff_entries=${parts.length} hops=${hops}`);
+  }
+  if (parts.length > 0) return parts[Math.max(0, parts.length - hops)];
+  return req.headers.get("x-real-ip")?.trim() || null;
 }
 
 // Read and parse a JSON body while enforcing a byte cap, even without a Content-Length header

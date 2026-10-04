@@ -83,8 +83,13 @@ serve(async (req) => {
     }
 
     // Visitor identity: hashed IP (+ anonymous browser id). MAC addresses never reach a web server.
-    const ipHash = await hashIp(clientIp(req), Deno.env.get("IP_HASH_SALT") ?? "rag-chat");
+    // If no IP can be determined, key on the browser id / user-agent so visitors are not all
+    // lumped into one shared bucket where a single abuser would lock everyone out.
     const clientId = cleanClientId(body.clientId);
+    const ip = clientIp(req);
+    const identity =
+      ip ?? `anon:${clientId ?? `${req.headers.get("user-agent") ?? ""}|${req.headers.get("accept-language") ?? ""}`}`;
+    const ipHash = await hashIp(identity, Deno.env.get("IP_HASH_SALT") ?? "rag-chat");
 
     const waitMem = memoryRetryAfter(ipHash);
     if (waitMem > 0) {
