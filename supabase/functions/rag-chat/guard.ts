@@ -46,13 +46,51 @@ export function sanitizeReply(reply: string): string {
   return reply.length > MAX_REPLY_CHARS ? reply.slice(0, MAX_REPLY_CHARS) + "…" : reply;
 }
 
-// Best-effort client IP from the proxy headers Supabase/Cloudflare set.
+// Client IP from proxy headers. cf-connecting-ip is set by Cloudflare (client values are overwritten);
+// for x-forwarded-for take the RIGHTMOST entry, which the nearest trusted proxy appended, because
+// anything to its left can be spoofed by the caller to dodge per-IP limits.
 export function clientIp(req: Request): string {
   const cf = req.headers.get("cf-connecting-ip");
   if (cf) return cf.trim();
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0].trim();
+  const parts = (req.headers.get("x-forwarded-for") ?? "")
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length > 0) return parts[parts.length - 1];
   return req.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
+// Read and parse a JSON body while enforcing a byte cap, even without a Content-Length header
+// (chunked uploads would otherwise be read in full).
+export async function readJsonCapped(
+  req: Request,
+  maxBytes: number
+): Promise<{ ok: true; value: unknown } | { ok: false; tooLarge: boolean }> {
+  const reader = req.body?.getReader();
+  if (!reader) return { ok: false, tooLarge: false };
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      return { ok: false, tooLarge: true };
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    bytes.set(c, offset);
+    offset += c.byteLength;
+  }
+  try {
+    return { ok: true, value: JSON.parse(new TextDecoder().decode(bytes)) };
+  } catch (_) {
+    return { ok: false, tooLarge: false };
+  }
 }
 
 // Anonymous visitor id generated in the browser; keep it short and charset-limited.

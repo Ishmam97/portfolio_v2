@@ -9,6 +9,7 @@ import {
   hashIp,
   looksLikeInjection,
   memoryRetryAfter,
+  readJsonCapped,
   sanitizeReply,
 } from "./guard.ts";
 import { catalogPrompt, parseModelOutput, cardsFromMessage, MAX_CARDS, type CardRef } from "./catalog.ts";
@@ -18,6 +19,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
+
+const MAX_BODY_BYTES = 4096;
 
 interface ChatMessage {
   message: string;
@@ -59,16 +62,13 @@ serve(async (req) => {
         },
       });
 
-    if (Number(req.headers.get("content-length") ?? 0) > 4096) {
-      return reject(413, "payload_too_large", "That message is too large. Please keep it short.");
+    const parsed = await readJsonCapped(req, MAX_BODY_BYTES);
+    if (!parsed.ok) {
+      return parsed.tooLarge
+        ? reject(413, "payload_too_large", "That message is too large. Please keep it short.")
+        : reject(400, "invalid_request", "I couldn't read that message. Please try again.");
     }
-
-    let body: Partial<ChatMessage> = {};
-    try {
-      body = await req.json();
-    } catch (_) {
-      return reject(400, "invalid_request", "I couldn't read that message. Please try again.");
-    }
+    const body = (parsed.value ?? {}) as Partial<ChatMessage>;
 
     const message = cleanMessage(body.message);
     if (!message) {
