@@ -5,6 +5,7 @@ import {
   REFUSAL_REPLY,
   cleanClientId,
   checkLimit,
+  checkVisitor,
   cleanMessage,
   clientIp,
   envInt,
@@ -24,12 +25,13 @@ const corsHeaders = {
 
 const MAX_BODY_BYTES = 4096;
 
-// Tunable without a code change: set the matching secret (e.g. CHAT_IP_PER_HOUR=60) and redeploy.
-const chatLimits = () => ({
-  ipPerMin: envInt("CHAT_IP_PER_MIN", 6),
-  ipPerHour: envInt("CHAT_IP_PER_HOUR", 40),
-  ipPerDay: envInt("CHAT_IP_PER_DAY", 120),
-  clientPerHour: envInt("CHAT_CLIENT_PER_HOUR", 30),
+// Tunable without a code change: set the matching secret (e.g. CHAT_BURST_MAX=15) and redeploy.
+const chatRules = () => ({
+  burstMax: envInt("CHAT_BURST_MAX", 10), // answered requests per burst...
+  burstWindowSeconds: envInt("CHAT_BURST_WINDOW_SECONDS", 600), // ...within this window
+  cooldownSeconds: envInt("CHAT_COOLDOWN_SECONDS", 120), // then wait this long
+  banThreshold: envInt("CHAT_BAN_THRESHOLD", 20), // more than this many answers in 30 days => ban
+  banDays: Number(Deno.env.get("CHAT_BAN_DAYS") ?? "30") >= 0 ? Math.floor(Number(Deno.env.get("CHAT_BAN_DAYS") ?? "30")) : 30, // 0 = permanent
   globalPerDay: envInt("CHAT_GLOBAL_PER_DAY", 2000),
 });
 
@@ -85,7 +87,7 @@ serve(async (req) => {
     );
 
     // Throttle BEFORE reading the body so malformed/oversized/empty requests count too.
-    const waitMem = memoryRetryAfter(ipHash, envInt("CHAT_MEM_PER_MIN", 8));
+    const waitMem = memoryRetryAfter(ipHash, envInt("CHAT_MEM_PER_MIN", 30));
     if (waitMem > 0) {
       return reject(429, "rate_limited", `You're sending messages quickly. Please wait ${waitMem}s and try again.`, waitMem);
     }
@@ -113,8 +115,13 @@ serve(async (req) => {
     // Anonymous browser id: only an extra per-browser cap on top of the IP limits (it is spoofable).
     const clientId = cleanClientId(body.clientId);
 
-    const limits = chatLimits();
-    let blockedBy = await checkLimit(supabaseClient, ipHash, clientId, "chat", limits);
+    let blockedBy: { reason: string; retry_after_seconds: number } | null = await checkVisitor(
+      supabaseClient,
+      ipHash,
+      clientId,
+      "chat",
+      chatRules()
+    );
     if (!blockedBy && !ip) {
       // No IP available: shared ceiling across all anonymous callers, generous but finite.
       blockedBy = await checkLimit(supabaseClient, await hashIp("anon-shared", salt), null, "chat_anon", {
@@ -125,11 +132,21 @@ serve(async (req) => {
     }
     if (blockedBy) {
       const wait = blockedBy.retry_after_seconds ?? 60;
-      console.warn(`Rate limited (${blockedBy.reason}) ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
+      console.warn(`Chat blocked (${blockedBy.reason}) ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
+      if (blockedBy.reason === "banned") {
+        return reject(
+          403,
+          "banned",
+          "Chat access for this device has been disabled because it went over the usage limit. You can still reach me through the contact form, LinkedIn or GitHub."
+        );
+      }
+      const mins = Math.ceil(wait / 60);
       const text =
         blockedBy.reason === "global_day"
           ? "The chat has reached its daily limit. Please come back tomorrow, or reach me through the contact section."
-          : `You've reached the chat limit for now. Please try again in ${wait > 90 ? Math.ceil(wait / 60) + " minutes" : wait + "s"}.`;
+          : blockedBy.reason === "cooldown"
+          ? `You've hit the limit of ${chatRules().burstMax} messages. Please wait ${wait > 90 ? mins + " minutes" : wait + " seconds"} before asking again.`
+          : `You've reached the chat limit for now. Please try again in ${wait > 90 ? mins + " minutes" : wait + " seconds"}.`;
       return reject(429, "rate_limited", text, wait);
     }
 

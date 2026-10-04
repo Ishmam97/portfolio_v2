@@ -14,7 +14,7 @@ export const getClientId = (): string | undefined => {
   }
 };
 
-const GUARD_CODES = ["rate_limited", "message_too_long", "payload_too_large", "invalid_request"];
+const GUARD_CODES = ["rate_limited", "banned", "message_too_long", "payload_too_large", "invalid_request"];
 
 // Guardrail rejections come back as non-2xx with a friendly `response`; null for any other error.
 export const readGuardMessage = async (error: unknown): Promise<string | null> => {

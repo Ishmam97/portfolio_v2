@@ -220,3 +220,49 @@ export async function checkLimit(
   const row = (data as { allowed: boolean; reason: string; retry_after_seconds: number }[] | null)?.[0];
   return row && !row.allowed ? { reason: row.reason, retry_after_seconds: row.retry_after_seconds } : null;
 }
+
+export interface VisitorRules {
+  burstMax: number;
+  burstWindowSeconds: number;
+  cooldownSeconds: number;
+  banThreshold: number;
+  banDays: number; // 0 = permanent
+  globalPerDay: number;
+}
+
+export interface VisitorHit {
+  reason: "banned" | "cooldown" | "global_day" | string;
+  retry_after_seconds: number;
+}
+
+// Chat visitor rules (burst + cooldown + 30-day ban). Fails open if the database call errors.
+export async function checkVisitor(
+  supabase: {
+    rpc: (
+      fn: string,
+      args: Record<string, unknown>
+    ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  },
+  key: string,
+  clientId: string | null,
+  scope: string,
+  rules: VisitorRules
+): Promise<VisitorHit | null> {
+  const { data, error } = await supabase.rpc("check_visitor_limit", {
+    p_ip_hash: key,
+    p_client_id: clientId,
+    p_scope: scope,
+    p_burst_max: rules.burstMax,
+    p_burst_window_s: rules.burstWindowSeconds,
+    p_cooldown_s: rules.cooldownSeconds,
+    p_ban_threshold: rules.banThreshold,
+    p_ban_days: rules.banDays,
+    p_global_per_day: rules.globalPerDay,
+  });
+  if (error) {
+    console.error(`check_visitor_limit(${scope}) failed (memory limiting only):`, error.message);
+    return null;
+  }
+  const row = (data as { allowed: boolean; reason: string; retry_after_seconds: number }[] | null)?.[0];
+  return row && !row.allowed ? { reason: row.reason, retry_after_seconds: row.retry_after_seconds } : null;
+}
