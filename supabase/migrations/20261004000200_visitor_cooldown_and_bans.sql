@@ -81,8 +81,7 @@ begin
     order by b.banned_until desc nulls first
     limit 1;
   if coalesce(v_banned, false) then
-    insert into chat_request_log (ip_hash, client_id, blocked, reason, scope)
-      values (p_ip_hash, p_client_id, true, 'banned', p_scope);
+    -- no log write: repeat attempts by a banned visitor must not grow the table
     return query select false, 'banned'::text,
       case when v_ban_until is null then 0 else greatest(1, ceil(extract(epoch from (v_ban_until - now())))::int) end;
     return;
@@ -134,8 +133,7 @@ begin
       where l.scope = p_scope and l.reason = 'cooldown:' || v_kind
         and ((v_kind = 'ip' and l.ip_hash = v_key) or (v_kind = 'client' and l.client_id = v_key));
     if v_cd_at is not null and v_cd_at + make_interval(secs => p_cooldown_s) > now() then
-      insert into chat_request_log (ip_hash, client_id, blocked, reason, scope)
-        values (p_ip_hash, p_client_id, true, 'cooldown_active', p_scope);
+      -- no log write: the single 'cooldown:*' marker written when the cooldown started is enough
       return query select false, 'cooldown'::text,
         greatest(1, ceil(extract(epoch from (v_cd_at + make_interval(secs => p_cooldown_s) - now())))::int);
       return;
@@ -173,8 +171,6 @@ begin
   select count(*) into v_count from chat_request_log l
     where l.scope = p_scope and not l.blocked and l.created_at > now() - interval '1 day';
   if v_count >= p_global_per_day then
-    insert into chat_request_log (ip_hash, client_id, blocked, reason, scope)
-      values (p_ip_hash, p_client_id, true, 'global_day', p_scope);
     return query select false, 'global_day'::text, 3600;
     return;
   end if;
@@ -185,6 +181,7 @@ begin
   -- housekeeping (keep > 30 days so the monthly count stays accurate)
   if random() < 0.01 then
     delete from chat_request_log l where l.created_at < now() - interval '45 days';
+    delete from visitor_bans b where b.banned_until is not null and b.banned_until < now() - interval '90 days';
   end if;
 
   return query select true, null::text, 0;

@@ -266,8 +266,13 @@ export async function checkVisitor(
     p_suspect_multiplier: rules.suspectMultiplier,
   });
   if (error) {
-    console.error(`check_visitor_limit(${scope}) failed (memory limiting only):`, error.message);
-    return null;
+    // Most likely deployment drift (migration not applied, or code and DB function out of sync).
+    // Do not fail open: fall back to a strict per-isolate limiter so protection never silently vanishes.
+    console.error(
+      `LIMITER DEGRADED: check_visitor_limit(${scope}) failed - apply the latest migrations and redeploy. ${error.message}`
+    );
+    const wait = memoryRetryAfter(`visitor-fallback:${scope}:${key}`, rules.burstMax, rules.burstWindowSeconds * 1000);
+    return wait > 0 ? { reason: "cooldown", retry_after_seconds: wait } : null;
   }
   const row = (data as { allowed: boolean; reason: string; retry_after_seconds: number }[] | null)?.[0];
   return row && !row.allowed ? { reason: row.reason, retry_after_seconds: row.retry_after_seconds } : null;
