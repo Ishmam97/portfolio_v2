@@ -228,6 +228,8 @@ export interface VisitorRules {
   banThreshold: number;
   banDays: number; // 0 = permanent
   globalPerDay: number;
+  ipMultiplier: number; // IP backstop is this many times looser than the per-browser limits
+  ipTrusted: boolean; // false when no real IP was available (key derived from headers)
 }
 
 export interface VisitorHit {
@@ -258,6 +260,8 @@ export async function checkVisitor(
     p_ban_threshold: rules.banThreshold,
     p_ban_days: rules.banDays,
     p_global_per_day: rules.globalPerDay,
+    p_ip_multiplier: rules.ipMultiplier,
+    p_ip_trusted: rules.ipTrusted,
   });
   if (error) {
     console.error(`check_visitor_limit(${scope}) failed (memory limiting only):`, error.message);

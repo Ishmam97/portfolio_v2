@@ -26,13 +26,15 @@ const corsHeaders = {
 const MAX_BODY_BYTES = 4096;
 
 // Tunable without a code change: set the matching secret (e.g. CHAT_BURST_MAX=15) and redeploy.
-const chatRules = () => ({
+const chatRules = (ipTrusted = true) => ({
   burstMax: envInt("CHAT_BURST_MAX", 10), // answered requests per burst...
   burstWindowSeconds: envInt("CHAT_BURST_WINDOW_SECONDS", 600), // ...within this window
   cooldownSeconds: envInt("CHAT_COOLDOWN_SECONDS", 120), // then wait this long
   banThreshold: envInt("CHAT_BAN_THRESHOLD", 20), // more than this many answers in 30 days => ban
   banDays: Number(Deno.env.get("CHAT_BAN_DAYS") ?? "30") >= 0 ? Math.floor(Number(Deno.env.get("CHAT_BAN_DAYS") ?? "30")) : 30, // 0 = permanent
   globalPerDay: envInt("CHAT_GLOBAL_PER_DAY", 2000),
+  ipMultiplier: envInt("CHAT_IP_MULTIPLIER", 5), // shared-network backstop = base limits x this
+  ipTrusted,
 });
 
 interface ChatMessage {
@@ -120,7 +122,7 @@ serve(async (req) => {
       ipHash,
       clientId,
       "chat",
-      chatRules()
+      chatRules(ip !== null)
     );
     if (!blockedBy && !ip) {
       // No IP available: shared ceiling across all anonymous callers, generous but finite.
