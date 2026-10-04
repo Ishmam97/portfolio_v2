@@ -4,14 +4,16 @@ import {
   MAX_MESSAGE_CHARS,
   REFUSAL_REPLY,
   cleanClientId,
+  checkLimit,
   cleanMessage,
   clientIp,
+  envInt,
   hashIp,
   looksLikeInjection,
   memoryRetryAfter,
   readJsonCapped,
   sanitizeReply,
-} from "./guard.ts";
+} from "../_shared/guard.ts";
 import { catalogPrompt, parseModelOutput, cardsFromMessage, MAX_CARDS, type CardRef } from "./catalog.ts";
 
 const corsHeaders = {
@@ -21,6 +23,15 @@ const corsHeaders = {
 };
 
 const MAX_BODY_BYTES = 4096;
+
+// Tunable without a code change: set the matching secret (e.g. CHAT_IP_PER_HOUR=60) and redeploy.
+const chatLimits = () => ({
+  ipPerMin: envInt("CHAT_IP_PER_MIN", 6),
+  ipPerHour: envInt("CHAT_IP_PER_HOUR", 40),
+  ipPerDay: envInt("CHAT_IP_PER_DAY", 120),
+  clientPerHour: envInt("CHAT_CLIENT_PER_HOUR", 30),
+  globalPerDay: envInt("CHAT_GLOBAL_PER_DAY", 2000),
+});
 
 interface ChatMessage {
   message: string;
@@ -74,7 +85,7 @@ serve(async (req) => {
     );
 
     // Throttle BEFORE reading the body so malformed/oversized/empty requests count too.
-    const waitMem = memoryRetryAfter(ipHash);
+    const waitMem = memoryRetryAfter(ipHash, envInt("CHAT_MEM_PER_MIN", 8));
     if (waitMem > 0) {
       return reject(429, "rate_limited", `You're sending messages quickly. Please wait ${waitMem}s and try again.`, waitMem);
     }
@@ -102,27 +113,14 @@ serve(async (req) => {
     // Anonymous browser id: only an extra per-browser cap on top of the IP limits (it is spoofable).
     const clientId = cleanClientId(body.clientId);
 
-    const checkLimit = async (key: string, cid: string | null, caps: Record<string, number> = {}) => {
-      const { data, error } = await supabaseClient.rpc("check_chat_rate_limit", {
-        p_ip_hash: key,
-        p_client_id: cid,
-        ...caps,
-      });
-      if (error) {
-        // Fail open so the chat keeps working if the migration has not been applied yet.
-        console.error("check_chat_rate_limit failed (rate limiting by memory only):", error.message);
-        return null;
-      }
-      return data?.[0] && !data[0].allowed ? data[0] : null;
-    };
-
-    let blockedBy = await checkLimit(ipHash, clientId);
+    const limits = chatLimits();
+    let blockedBy = await checkLimit(supabaseClient, ipHash, clientId, "chat", limits);
     if (!blockedBy && !ip) {
       // No IP available: shared ceiling across all anonymous callers, generous but finite.
-      blockedBy = await checkLimit(await hashIp("anon-shared", salt), null, {
-        p_ip_per_min: 30,
-        p_ip_per_hour: 200,
-        p_ip_per_day: 600,
+      blockedBy = await checkLimit(supabaseClient, await hashIp("anon-shared", salt), null, "chat_anon", {
+        ipPerMin: 30,
+        ipPerHour: 200,
+        ipPerDay: 600,
       });
     }
     if (blockedBy) {

@@ -127,3 +127,66 @@ export function memoryRetryAfter(key: string, limit = 8, windowMs = 60_000): num
   }
   return 0;
 }
+
+// ---- Shared helpers used by several edge functions ------------------------------------------
+
+// Positive integer from an env var, else the fallback (lets limits be tuned without a deploy).
+export function envInt(name: string, fallback: number): number {
+  const n = Number(Deno.env.get(name));
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export function isValidEmail(email: string): boolean {
+  return email.length <= 120 && /^[^\s@<>()[\],;:"\\]+@[^\s@<>()[\],;:"\\]+\.[A-Za-z]{2,}$/.test(email);
+}
+
+export interface LimitCaps {
+  ipPerMin?: number;
+  ipPerHour?: number;
+  ipPerDay?: number;
+  clientPerHour?: number;
+  globalPerDay?: number;
+}
+
+export interface LimitHit {
+  reason: string;
+  retry_after_seconds: number;
+}
+
+// Database-backed limit check (see migrations). Returns the violated limit, or null when the
+// request is allowed. Fails open (null) if the RPC errors, e.g. before the migration is applied.
+export async function checkLimit(
+  supabase: {
+    rpc: (
+      fn: string,
+      args: Record<string, unknown>
+    ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  },
+  key: string,
+  clientId: string | null,
+  scope: string,
+  caps: LimitCaps = {}
+): Promise<LimitHit | null> {
+  const args: Record<string, unknown> = { p_ip_hash: key, p_client_id: clientId, p_scope: scope };
+  if (caps.ipPerMin) args.p_ip_per_min = caps.ipPerMin;
+  if (caps.ipPerHour) args.p_ip_per_hour = caps.ipPerHour;
+  if (caps.ipPerDay) args.p_ip_per_day = caps.ipPerDay;
+  if (caps.clientPerHour) args.p_client_per_hour = caps.clientPerHour;
+  if (caps.globalPerDay) args.p_global_per_day = caps.globalPerDay;
+  const { data, error } = await supabase.rpc("check_rate_limit", args);
+  if (error) {
+    console.error(`check_rate_limit(${scope}) failed (memory limiting only):`, error.message);
+    return null;
+  }
+  const row = (data as { allowed: boolean; reason: string; retry_after_seconds: number }[] | null)?.[0];
+  return row && !row.allowed ? { reason: row.reason, retry_after_seconds: row.retry_after_seconds } : null;
+}
