@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
+import { motion } from "framer-motion";
 import ChatContextPanel, { type ChatCardRef } from "./chat/ChatContextPanel";
 
 interface Message {
@@ -159,6 +160,26 @@ const renderMarkdownContent = (text: string) => {
   flushList();
   flushCode();
   return elements;
+};
+
+const TwinAvatar = ({ size = 'md', shared = false }: { size?: 'sm' | 'md'; shared?: boolean }) => {
+  const dims = size === 'md' ? 'h-10 w-10' : 'h-8 w-8';
+  const brain = size === 'md' ? 'h-5 w-5' : 'h-4 w-4';
+  return (
+    <div className={`relative mt-1 flex-shrink-0 ${dims}`} aria-hidden>
+      <motion.img
+        layoutId={shared ? 'twin-photo' : undefined}
+        src="/assets/IMG_5747.jpeg"
+        alt=""
+        className="h-full w-full rounded-full border-2 border-neon-green/60 object-cover"
+      />
+      <div className="absolute inset-x-0 -top-3 flex justify-center">
+        <motion.span layoutId={shared ? 'twin-brain' : undefined} className="block">
+          <Brain className={`${brain} text-neon-green animate-pulse drop-shadow-[0_0_4px_rgba(0,255,156,0.9)]`} />
+        </motion.span>
+      </div>
+    </div>
+  );
 };
 
 const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
@@ -856,26 +877,38 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
   ];
 
   return (
-    <div
-      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 max-w-5xl w-full animate-fade-in flex flex-col h-[clamp(30rem,calc(100svh-11rem),46rem)] shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
+    <motion.div
+      layoutId="twin-window"
+      transition={{ type: "spring", stiffness: 110, damping: 20 }}
+      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 w-full flex flex-col h-[clamp(30rem,calc(100svh-11rem),46rem)] shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
       tabIndex={-1}
     >
       <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background:repeating-linear-gradient(0deg,rgba(0,255,156,0.18)_0_1px,transparent_1px_3px)]" />
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between mb-4 pb-3 border-b border-neon-green/30">
         <div className="flex items-center gap-2">
-          <div className="rounded-sm p-1.5 bg-neon-green/15 border border-neon-green/45">
-            <Brain className="text-neon-green w-5 h-5" />
+          <div className="pt-2.5">
+            <TwinAvatar shared />
           </div>
-          <span className="text-neon-green font-semibold tracking-wide">
+          <motion.span
+            className="text-neon-green font-semibold tracking-wide"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
             terminal://ishmam_digital_twin
-          </span>
+          </motion.span>
           <div className="flex items-center gap-1 text-xs text-neon-yellow/80 md:visible invisible">
             <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
             ONLINE
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <motion.div
+          className="flex items-center gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
           {isTTSAvailable && (
             <Button
               type="button"
@@ -905,10 +938,15 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
           >
             <X className="w-4 h-4" />
           </Button>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+      <motion.div
+        className="relative z-10 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.55, duration: 0.5 }}
+      >
       <ChatContextPanel cards={activeCards} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {/* Messages */}
@@ -925,7 +963,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
             >
               {message.isBot && (
                 <div className="flex items-center gap-1">
-                  <Brain className="text-neon-green w-4 h-4 mt-1 flex-shrink-0" />
+                  <div className="pt-2"><TwinAvatar size="sm" /></div>
                   {isTTSAvailable && voicesLoaded && (
                     <button
                       onClick={() =>
@@ -1004,7 +1042,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
 
         {isTyping && (
           <div className="flex items-start gap-2">
-            <Brain className="text-neon-green w-4 h-4 mt-1 flex-shrink-0" />
+            <div className="pt-2"><TwinAvatar size="sm" /></div>
             <div className="bg-cyber-dark/85 text-neon-green border border-neon-green/35 px-3 py-2 rounded-sm text-sm">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -1058,8 +1096,8 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         </Button>
       </form>
       </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
