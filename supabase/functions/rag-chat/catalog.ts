@@ -68,7 +68,16 @@ export function parseModelOutput(text: string): { reply: string; cards: CardRef[
       return { reply: parsed.reply, cards: sanitizeCards(parsed.cards) };
     }
   } catch (_) {
-    // not JSON
+    // not strict JSON; some models put raw newlines inside the reply string
+    const m = stripped.match(/"reply"\s*:\s*"([\s\S]*)"\s*,\s*"cards"\s*:\s*(\[[\s\S]*?\])\s*\}\s*$/);
+    if (m) {
+      try {
+        const reply = JSON.parse('"' + m[1].replace(/\r?\n/g, "\\n").replace(/\t/g, "\\t") + '"');
+        return { reply, cards: sanitizeCards(JSON.parse(m[2])) };
+      } catch (_) {
+        // fall through to plain text
+      }
+    }
   }
   return { reply: text, cards: [] };
 }
