@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { catalogPrompt, parseModelOutput, cardsFromMessage, MAX_CARDS, type CardRef } from "./catalog.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,16 @@ const corsHeaders = {
 
 interface ChatMessage {
   message: string;
+}
+
+// Gemini returns transient 503/429 under load; one short retry avoids most fallbacks.
+async function fetchWithRetry(url: string, init: RequestInit, retries = 1): Promise<Response> {
+  let res = await fetch(url, init);
+  for (let i = 0; i < retries && (res.status === 503 || res.status === 429); i++) {
+    await new Promise((r) => setTimeout(r, 1200));
+    res = await fetch(url, init);
+  }
+  return res;
 }
 
 serve(async (req) => {
@@ -133,10 +144,18 @@ Behavior Rules:
   5. Keep tone conversational yet professional.
   6. Highlight relevant experience and skills when applicable.
 
+Cards:
+  The UI can show a visual card next to your answer. When your answer is mainly about a specific project or job/education entry from the list below, reference it in "cards" (at most ${MAX_CARDS}, most relevant first). Only use ids from this list. If the question names one of these entries (a project, company, role, or school), you MUST include its card. Use an empty array for general questions (skills, contact, greetings) or when no single entry is the focus.
+${catalogPrompt}
+
+Output format:
+  Respond with ONLY a JSON object: {"reply": "<your answer, markdown allowed>", "cards": [{"type": "project" | "experience", "id": "<id>"}]}
+
 Context:
 ${context.trim()}`;
 
     let botMessage: string | null = null;
+    let cards: CardRef[] = [];
     let geminiError: unknown = null;
     let source: "gemini" | "openrouter" | null = null;
 
@@ -146,7 +165,7 @@ ${context.trim()}`;
         throw new Error("GEMINI_API_KEY is not configured");
       }
 
-      const geminiResponse = await fetch(
+      const geminiResponse = await fetchWithRetry(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
         {
           method: "POST",
@@ -168,6 +187,25 @@ ${context.trim()}`;
               topK: 40,
               topP: 0.95,
               maxOutputTokens: 2048,
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  reply: { type: "STRING" },
+                  cards: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        type: { type: "STRING", enum: ["project", "experience"] },
+                        id: { type: "STRING" },
+                      },
+                      required: ["type", "id"],
+                    },
+                  },
+                },
+                required: ["reply", "cards"],
+              },
               thinkingConfig: {
                 thinkingBudget: 0,
               },
@@ -207,7 +245,7 @@ ${context.trim()}`;
           `Invalid response from Gemini API (finishReason=${candidate?.finishReason ?? "none"}, raw=${JSON.stringify(aiResponse).slice(0, 500)})`
         );
       }
-      botMessage = text;
+      ({ reply: botMessage, cards } = parseModelOutput(text));
       source = "gemini";
     } catch (err) {
       geminiError = err;
@@ -223,12 +261,13 @@ ${context.trim()}`;
           Authorization: `Bearer ${openRouterApiKey}`,
         },
         body: JSON.stringify({
-          model: "z-ai/glm-4.5-air:free",
+          model: Deno.env.get("OPENROUTER_MODEL") ?? "google/gemma-4-31b-it:free",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: message }
           ],
-          max_tokens: 500,
+          max_tokens: 800,
+          response_format: { type: "json_object" },
           temperature: 0.7,
         })
       });
@@ -237,13 +276,24 @@ ${context.trim()}`;
         throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData} | gemini: ${(err as Error)?.message ?? err}`);
       }
       const openRouterData = await openRouterResponse.json();
-      botMessage = openRouterData.choices?.[0]?.message?.content || "I'm sorry, I couldn't generate a response at this time.";
+      const openRouterText = openRouterData.choices?.[0]?.message?.content;
+      if (openRouterText) {
+        ({ reply: botMessage, cards } = parseModelOutput(openRouterText));
+      } else {
+        botMessage = "I'm sorry, I couldn't generate a response at this time.";
+      }
       source = "openrouter";
+    }
+
+    // Backstop: if the model skipped the cards, match the question against known names.
+    if (cards.length === 0) {
+      cards = cardsFromMessage(message);
     }
 
     return new Response(
       JSON.stringify({
         response: botMessage,
+        cards,
         source,
         geminiError: geminiError ? (geminiError as Error)?.message ?? String(geminiError) : null,
         relevantSections: relevantSections.map((s) => ({
