@@ -53,6 +53,22 @@ export function sanitizeReply(reply: string): string {
 // function. Too small a value can collapse all visitors onto a proxy's address; too large trusts
 // spoofable entries - check the logged header shape (set IP_DEBUG=1) after deploying.
 export function clientIp(req: Request): string | null {
+  const raw = rawClientIp(req);
+  return raw ? normalizeIp(raw) : null;
+}
+
+// One visitor typically controls a whole IPv6 /64, so rate limit on the /64 prefix; otherwise
+// rotating addresses inside it would give a fresh bucket on every request.
+export function normalizeIp(ip: string): string {
+  if (!ip.includes(":") || ip.includes(".")) return ip; // IPv4 (or IPv4-mapped)
+  const [head, tail = ""] = ip.split("::");
+  const h = head ? head.split(":") : [];
+  const t = tail ? tail.split(":") : [];
+  const groups = ip.includes("::") ? [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill("0"), ...t] : h;
+  return groups.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, "")).join(":") + "::/64";
+}
+
+function rawClientIp(req: Request): string | null {
   const cf = req.headers.get("cf-connecting-ip")?.trim();
   if (cf) return cf;
   const parts = (req.headers.get("x-forwarded-for") ?? "")
@@ -149,6 +165,18 @@ export function isValidEmail(email: string): boolean {
   return email.length <= 120 && /^[^\s@<>()[\],;:"\\]+@[^\s@<>()[\],;:"\\]+\.[A-Za-z]{2,}$/.test(email);
 }
 
+// Collapse aliases of the same mailbox (+tags, Gmail dots) so per-recipient limits cannot be dodged.
+export function canonicalEmail(email: string): string {
+  const [localRaw, domainRaw = ""] = email.toLowerCase().split("@");
+  let local = localRaw.split("+")[0];
+  let domain = domainRaw;
+  if (domain === "gmail.com" || domain === "googlemail.com") {
+    domain = "gmail.com";
+    local = local.replace(/\./g, "");
+  }
+  return `${local}@${domain}`;
+}
+
 export interface LimitCaps {
   ipPerMin?: number;
   ipPerHour?: number;
@@ -174,7 +202,8 @@ export async function checkLimit(
   key: string,
   clientId: string | null,
   scope: string,
-  caps: LimitCaps = {}
+  caps: LimitCaps = {},
+  opts: { failClosed?: boolean } = {}
 ): Promise<LimitHit | null> {
   const args: Record<string, unknown> = { p_ip_hash: key, p_client_id: clientId, p_scope: scope };
   if (caps.ipPerMin) args.p_ip_per_min = caps.ipPerMin;
@@ -184,8 +213,9 @@ export async function checkLimit(
   if (caps.globalPerDay) args.p_global_per_day = caps.globalPerDay;
   const { data, error } = await supabase.rpc("check_rate_limit", args);
   if (error) {
-    console.error(`check_rate_limit(${scope}) failed (memory limiting only):`, error.message);
-    return null;
+    console.error(`check_rate_limit(${scope}) failed:`, error.message);
+    // Fail open for chat; fail closed where a request has real cost (sending email).
+    return opts.failClosed ? { reason: "limiter_unavailable", retry_after_seconds: 60 } : null;
   }
   const row = (data as { allowed: boolean; reason: string; retry_after_seconds: number }[] | null)?.[0];
   return row && !row.allowed ? { reason: row.reason, retry_after_seconds: row.retry_after_seconds } : null;

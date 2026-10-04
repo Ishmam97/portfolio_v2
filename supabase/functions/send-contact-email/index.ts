@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@3.4.0";
 import {
+  canonicalEmail,
   checkLimit,
   cleanClientId,
   clientIp,
@@ -124,28 +125,30 @@ serve(async (req: Request) => {
       ipPerDay: envInt("CONTACT_IP_PER_DAY", 8),
       clientPerHour: envInt("CONTACT_CLIENT_PER_HOUR", 4),
       globalPerDay: envInt("CONTACT_GLOBAL_PER_DAY", 100),
-    });
+    }, { failClosed: true });
     if (!blocked && !ip) {
       blocked = await checkLimit(supabase, await hashIp("anon-shared", salt), null, "contact_anon", {
         ipPerMin: 5,
         ipPerHour: 20,
         ipPerDay: 60,
-      });
+      }, { failClosed: true });
     }
     // Per-recipient cap stops the form being used to mail-bomb someone else's address.
     if (!blocked) {
-      blocked = await checkLimit(supabase, `rcpt:${await hashIp(email, salt)}`, null, "contact_rcpt", {
+      blocked = await checkLimit(supabase, `rcpt:${await hashIp(canonicalEmail(email), salt)}`, null, "contact_rcpt", {
         ipPerMin: 1,
         ipPerHour: envInt("CONTACT_RCPT_PER_HOUR", 2),
         ipPerDay: envInt("CONTACT_RCPT_PER_DAY", 3),
         globalPerDay: 1_000_000,
-      });
+      }, { failClosed: true });
     }
     if (blocked) {
       const retry = blocked.retry_after_seconds || 60;
       console.warn(`Contact rate limited (${blocked.reason}) ip=${ipHash.slice(0, 12)}`);
       const text =
-        blocked.reason === "global_day"
+        blocked.reason === "limiter_unavailable"
+          ? "The contact form is temporarily unavailable. Please reach me through LinkedIn or GitHub instead."
+          : blocked.reason === "global_day"
           ? "The contact form has reached its daily limit. Please reach me through LinkedIn or GitHub instead."
           : `You've sent a few messages already. Please try again in ${retry > 90 ? Math.ceil(retry / 60) + " minutes" : retry + "s"}.`;
       return respond(429, { error: "rate_limited", response: text }, retry);
@@ -168,12 +171,13 @@ serve(async (req: Request) => {
              <p>${safeMessage}</p>`,
     });
 
-    // Confirmation email to the sender (all user-supplied text escaped)
+    // Confirmation email: deliberately contains no user-supplied text, since it goes to an address
+    // the sender typed and could otherwise carry attacker-chosen content to a stranger.
     await resend.emails.send({
       from: "Ishmam Solaiman <onboarding@resend.dev>",
       to: email,
       subject: "Thank you for your message!",
-      html: `<p>Hi ${safeName},</p>
+      html: `<p>Hi there,</p>
              <p>Thank you for reaching out. I have received your message and will get back to you as soon as possible.</p>
              <p>Best regards,<br>Ishmam Solaiman</p>`,
     });
