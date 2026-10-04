@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Mail, MessageSquare, Send, Linkedin, Github, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -6,13 +6,16 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { supabase } from '../integrations/supabase/client';
 import { useToast } from './ui/use-toast';
+import { getClientId, readGuardMessage } from '@/lib/guardClient';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    website: '' // honeypot: real visitors never see or fill this
   });
+  const openedAt = useRef(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -21,7 +24,7 @@ const Contact = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData,
+        body: { ...formData, elapsedMs: Date.now() - openedAt.current, clientId: getClientId() },
       });
 
       if (error) {
@@ -32,14 +35,16 @@ const Contact = () => {
         title: "Message Sent!",
         description: "Thank you for your message. I'll get back to you soon.",
       });
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', message: '', website: '' });
+      openedAt.current = Date.now();
 
     } catch (error: any) {
       console.error('Error submitting form:', error);
+      const guardMessage = await readGuardMessage(error);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem sending your message. Please try again later.",
+        description: guardMessage ?? "There was a problem sending your message. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -151,6 +156,7 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      maxLength={80}
                       className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
                     />
                   </div>
@@ -162,6 +168,7 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      maxLength={120}
                       className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow text-sm sm:text-base h-10 sm:h-12"
                     />
                   </div>
@@ -172,9 +179,25 @@ const Contact = () => {
                       value={formData.message}
                       onChange={handleChange}
                       required
+                      minLength={10}
+                      maxLength={2000}
                       rows={4}
                       className="bg-cyber-darker border-neon-purple text-neon-green placeholder:text-neon-pink/50 focus:border-neon-yellow resize-none text-sm sm:text-base min-h-[100px] sm:min-h-[120px]"
                     />
+                  </div>
+                  {/* Honeypot for bots; hidden from people and assistive tech */}
+                  <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                    <label>
+                      Website
+                      <input
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={formData.website}
+                        onChange={handleChange}
+                      />
+                    </label>
                   </div>
                   <Button
                     type="submit"

@@ -13,6 +13,7 @@ import {
 import { supabase } from "../integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
 import { motion } from "framer-motion";
+import { getClientId, readGuardMessage } from "@/lib/guardClient";
 import ChatContextPanel, { type ChatCardRef } from "./chat/ChatContextPanel";
 
 interface Message {
@@ -163,33 +164,6 @@ const renderMarkdownContent = (text: string) => {
 };
 
 const MAX_MESSAGE_CHARS = 500;
-
-// Anonymous per-browser id so the backend can rate-limit one visitor across IPs.
-const getClientId = (): string | undefined => {
-  try {
-    let id = localStorage.getItem("twin_client_id");
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem("twin_client_id", id);
-    }
-    return id;
-  } catch {
-    return undefined;
-  }
-};
-
-// Guardrail rejections (rate limit, too long...) come back as non-2xx with a friendly `response`.
-const readGuardMessage = async (error: unknown): Promise<string | null> => {
-  const res = (error as { context?: Response } | null)?.context;
-  if (!res || typeof res.json !== "function") return null;
-  try {
-    const body = await res.json();
-    const guarded = ["rate_limited", "message_too_long", "payload_too_large", "invalid_request"];
-    return guarded.includes(body?.error) && typeof body?.response === "string" ? body.response : null;
-  } catch {
-    return null;
-  }
-};
 
 const TwinAvatar = ({ size = 'md', shared = false }: { size?: 'sm' | 'md'; shared?: boolean }) => {
   const dims = size === 'md' ? 'h-10 w-10' : 'h-8 w-8';
