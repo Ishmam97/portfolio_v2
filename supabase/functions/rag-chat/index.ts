@@ -24,6 +24,8 @@ async function fetchWithRetry(url: string, init: RequestInit, retries = 1): Prom
 }
 
 serve(async (req) => {
+  // Status codes only (no upstream bodies) so failures can be diagnosed from the client.
+  const attempts: string[] = [];
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -243,6 +245,7 @@ ${context.trim()}`;
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
           geminiInit
         );
+        attempts.push(`${model}:${res.status}`);
         if (res.ok) {
           geminiResponse = res;
           geminiModelUsed = model;
@@ -259,6 +262,7 @@ ${context.trim()}`;
       const candidate = aiResponse.candidates?.[0];
       const text = candidate?.content?.parts?.[0]?.text;
       if (!text) {
+        attempts.push(`${geminiModelUsed}:empty(${candidate?.finishReason ?? "none"})`);
         throw new Error(
           `Invalid response from Gemini API (finishReason=${candidate?.finishReason ?? "none"}, raw=${JSON.stringify(aiResponse).slice(0, 500)})`
         );
@@ -290,6 +294,7 @@ ${context.trim()}`;
           temperature: 0.7,
         })
       });
+      attempts.push(`openrouter:${openRouterResponse.status}`);
       if (!openRouterResponse.ok) {
         const errorData = await openRouterResponse.text();
         throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorData} | gemini: ${(err as Error)?.message ?? err}`);
@@ -332,6 +337,7 @@ ${context.trim()}`;
           "I'm sorry, I encountered an error processing your question. Please try again.",
         // Upstream provider errors can carry quota/project details; they stay in the function logs.
         error: "chat_unavailable",
+        attempts,
       }),
       {
         status: 500,
