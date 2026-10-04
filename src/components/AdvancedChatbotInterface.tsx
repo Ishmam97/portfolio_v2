@@ -143,7 +143,7 @@ const renderMarkdownContent = (text: string) => {
     const h2Match = line.match(/^##\s+(.+)/);
     if (h2Match) {
       elements.push(
-        <h2 key={`h2-${elements.length}`} className="text-neon-yellow font-semibold text-base mt-2">
+        <h2 key={`h2-${elements.length}`} className="text-neon-yellow font-semibold text-base lg:text-[1.1em] mt-2">
           {renderInlineMarkdown(h2Match[1])}
         </h2>
       );
@@ -879,8 +879,8 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
   return (
     <motion.div
       layoutId="twin-window"
-      transition={{ type: "spring", stiffness: 110, damping: 20 }}
-      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 w-full flex flex-col h-[clamp(30rem,calc(100svh-11rem),46rem)] shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
+      transition={{ type: "spring", stiffness: 170, damping: 24 }}
+      className="relative bg-[#07090f]/95 border border-neon-green/45 rounded-md p-4 w-full flex flex-col h-[clamp(30rem,calc(100svh-11rem),46rem)] lg:h-full lg:max-h-full shadow-[0_0_45px_rgba(0,255,156,0.14)] backdrop-blur-sm font-mono"
       tabIndex={-1}
     >
       <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background:repeating-linear-gradient(0deg,rgba(0,255,156,0.18)_0_1px,transparent_1px_3px)]" />
@@ -891,7 +891,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
             <TwinAvatar shared />
           </div>
           <motion.span
-            className="text-neon-green font-semibold tracking-wide"
+            className="text-neon-green font-semibold tracking-wide lg:text-[clamp(1rem,1.2vw,1.5rem)]"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
@@ -993,20 +993,20 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
                 </div>
               )}
               <div
-                className={`max-w-xs lg:max-w-2xl px-3.5 py-2.5 rounded-sm text-sm border shadow-sm ${
+                className={`max-w-xs lg:max-w-[min(70%,60rem)] px-3.5 py-2.5 rounded-sm text-sm lg:text-[clamp(0.95rem,1.15vw,1.4rem)] border shadow-sm ${
                   message.isBot
                     ? "bg-cyber-dark/85 text-neon-green border-neon-green/40"
                     : "bg-neon-green/12 text-neon-yellow border-neon-yellow/35"
                 }`}
               >
-                {message.isBot && <div className="text-[10px] text-neon-green/70 mb-1">{'>'} assistant</div>}
+                {message.isBot && <div className="text-[10px] lg:text-[clamp(0.65rem,0.75vw,0.95rem)] text-neon-green/70 mb-1">{'>'} assistant</div>}
                 {message.isBot ? (
                   <div className="space-y-1 break-words">
                     {renderMarkdownContent(message.text)}
                   </div>
                 ) : (
                   <div>
-                    <div className="text-[10px] text-neon-yellow/70 mb-1">{'>'} user</div>
+                    <div className="text-[10px] lg:text-[clamp(0.65rem,0.75vw,0.95rem)] text-neon-yellow/70 mb-1">{'>'} user</div>
                     {message.text}
                   </div>
                 )}
@@ -1020,7 +1020,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
             {message.isBot &&
               message.relevantSections &&
               message.relevantSections.length > 0 && (
-                <div className="ml-6 text-xs text-neon-green/70">
+                <div className="ml-6 text-xs lg:text-[clamp(0.75rem,0.9vw,1.1rem)] text-neon-green/70">
                   <div className="flex items-center gap-1 mb-1">
                     <Brain className="w-3 h-3" />
                     <span>Referenced:</span>
@@ -1043,7 +1043,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         {isTyping && (
           <div className="flex items-start gap-2">
             <div className="pt-2"><TwinAvatar size="sm" /></div>
-            <div className="bg-cyber-dark/85 text-neon-green border border-neon-green/35 px-3 py-2 rounded-sm text-sm">
+            <div className="bg-cyber-dark/85 text-neon-green border border-neon-green/35 px-3 py-2 rounded-sm text-sm lg:text-[clamp(0.95rem,1.15vw,1.4rem)]">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Analyzing your question...</span>
@@ -1055,13 +1055,13 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
         {/* Suggested questions for new conversations */}
         {messages.length === 1 && (
           <div className="space-y-2">
-            <div className="text-xs text-neon-green/70 ml-6">suggested_queries:</div>
+            <div className="text-xs lg:text-[clamp(0.75rem,0.9vw,1.1rem)] text-neon-green/70 ml-6">suggested_queries:</div>
             <div className="ml-6 space-y-1">
               {suggestedQuestions.slice(0, 3).map((question, idx) => (
                 <button
                   key={idx}
                   onClick={() => setInputText(question)}
-                  className="block text-xs text-neon-green/80 hover:text-neon-yellow bg-cyber-dark/70 hover:bg-neon-green/10 border border-neon-green/25 rounded-sm px-2 py-1 text-left w-full transition-colors"
+                  className="block text-xs lg:text-[clamp(0.8rem,1vw,1.25rem)] text-neon-green/80 hover:text-neon-yellow bg-cyber-dark/70 hover:bg-neon-green/10 border border-neon-green/25 rounded-sm px-2 py-1 text-left w-full transition-colors"
                 >
                   "{question}"
                 </button>
@@ -1080,7 +1080,7 @@ const AdvancedChatbotInterface: React.FC<AdvancedChatbotInterfaceProps> = ({
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleInputKeyDown}
           placeholder="Ask me about my experience, skills, projects..."
-          className="flex-1 bg-cyber-dark border-neon-green/40 text-neon-green placeholder:text-neon-green/45 focus:border-neon-yellow rounded-sm"
+          className="flex-1 bg-cyber-dark border-neon-green/40 text-neon-green placeholder:text-neon-green/45 focus:border-neon-yellow rounded-sm lg:h-[clamp(2.5rem,3vw,3.5rem)] lg:text-[clamp(0.95rem,1.15vw,1.4rem)]"
           disabled={isTyping}
         />
         <Button
