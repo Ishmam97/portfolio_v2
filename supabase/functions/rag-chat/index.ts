@@ -1,5 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  MAX_MESSAGE_CHARS,
+  REFUSAL_REPLY,
+  cleanClientId,
+  cleanMessage,
+  clientIp,
+  hashIp,
+  looksLikeInjection,
+  memoryRetryAfter,
+  sanitizeReply,
+} from "./guard.ts";
 import { catalogPrompt, parseModelOutput, cardsFromMessage, MAX_CARDS, type CardRef } from "./catalog.ts";
 
 const corsHeaders = {
@@ -10,6 +21,7 @@ const corsHeaders = {
 
 interface ChatMessage {
   message: string;
+  clientId?: string;
 }
 
 // Gemini returns transient 503s under load; one short retry avoids most fallbacks.
@@ -36,11 +48,73 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { message }: ChatMessage = await req.json();
+    // ---- Guardrails -------------------------------------------------------
+    const reject = (status: number, code: string, text: string, retryAfter?: number) =>
+      new Response(JSON.stringify({ response: text, error: code, retryAfter: retryAfter ?? null }), {
+        status,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          ...(retryAfter ? { "Retry-After": String(retryAfter) } : {}),
+        },
+      });
 
-    // Validate message
-    if (!message || typeof message !== "string") {
-      throw new Error("Invalid message format");
+    if (Number(req.headers.get("content-length") ?? 0) > 4096) {
+      return reject(413, "payload_too_large", "That message is too large. Please keep it short.");
+    }
+
+    let body: Partial<ChatMessage> = {};
+    try {
+      body = await req.json();
+    } catch (_) {
+      return reject(400, "invalid_request", "I couldn't read that message. Please try again.");
+    }
+
+    const message = cleanMessage(body.message);
+    if (!message) {
+      return reject(400, "invalid_request", "Please type a question first.");
+    }
+    if (message.length > MAX_MESSAGE_CHARS) {
+      return reject(
+        400,
+        "message_too_long",
+        `Please keep questions under ${MAX_MESSAGE_CHARS} characters (yours was ${message.length}).`
+      );
+    }
+
+    // Visitor identity: hashed IP (+ anonymous browser id). MAC addresses never reach a web server.
+    const ipHash = await hashIp(clientIp(req), Deno.env.get("IP_HASH_SALT") ?? "rag-chat");
+    const clientId = cleanClientId(body.clientId);
+
+    const waitMem = memoryRetryAfter(ipHash);
+    if (waitMem > 0) {
+      return reject(429, "rate_limited", `You're sending messages quickly. Please wait ${waitMem}s and try again.`, waitMem);
+    }
+
+    const { data: limit, error: limitError } = await supabaseClient.rpc("check_chat_rate_limit", {
+      p_ip_hash: ipHash,
+      p_client_id: clientId,
+    });
+    if (limitError) {
+      // Fail open so the chat keeps working if the migration has not been applied yet.
+      console.error("check_chat_rate_limit failed (rate limiting by memory only):", limitError.message);
+    } else if (limit?.[0] && !limit[0].allowed) {
+      const wait = limit[0].retry_after_seconds ?? 60;
+      console.warn(`Rate limited (${limit[0].reason}) ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
+      const text =
+        limit[0].reason === "global_day"
+          ? "The chat has reached its daily limit. Please come back tomorrow, or reach me through the contact section."
+          : `You've reached the chat limit for now. Please try again in ${wait > 90 ? Math.ceil(wait / 60) + " minutes" : wait + "s"}.`;
+      return reject(429, "rate_limited", text, wait);
+    }
+
+    // Cheap pre-check: refuse obvious prompt-injection attempts without spending a model call.
+    if (looksLikeInjection(message)) {
+      console.warn(`Blocked injection attempt ip=${ipHash.slice(0, 12)} client=${clientId ?? "-"}`);
+      return new Response(
+        JSON.stringify({ response: REFUSAL_REPLY, cards: [], source: "guardrail", relevantSections: [] }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Fetch relevant resume sections based on simple keyword matching
@@ -290,7 +364,7 @@ ${context.trim()}`;
           name: "aiml",
           url: "https://api.aimlapi.com/v1/chat/completions",
           key: aimlApiKey,
-          model: Deno.env.get("AIML_MODEL") ?? "amazon/nova-micro-v1",
+          model: Deno.env.get("AIML_MODEL") ?? "alibaba/qwen-turbo",
         });
       }
       if (fallbacks.length === 0) {
@@ -347,7 +421,7 @@ ${context.trim()}`;
 
     return new Response(
       JSON.stringify({
-        response: botMessage,
+        response: sanitizeReply(botMessage ?? ""),
         cards,
         source,
         // Provider error text stays in the logs; clients only learn whether Gemini was skipped.
