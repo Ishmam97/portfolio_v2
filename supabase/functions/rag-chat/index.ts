@@ -35,6 +35,7 @@ const chatRules = (ipTrusted = true) => ({
   globalPerDay: envInt("CHAT_GLOBAL_PER_DAY", 2000),
   ipMultiplier: envInt("CHAT_IP_MULTIPLIER", 5), // shared-network backstop = base limits x this
   ipTrusted,
+  suspectMultiplier: envInt("CHAT_SUSPECT_MULTIPLIER", 2), // backstop for IPs a banned browser id came from
 });
 
 interface ChatMessage {
