@@ -330,7 +330,8 @@ ${context.trim()}`;
       JSON.stringify({
         response:
           "I'm sorry, I encountered an error processing your question. Please try again.",
-        error: error.message,
+        // Upstream provider errors can carry quota/project details; they stay in the function logs.
+        error: "chat_unavailable",
       }),
       {
         status: 500,
